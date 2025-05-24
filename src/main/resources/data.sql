@@ -1,0 +1,93 @@
+-- Datos maestras
+INSERT INTO alcance_sismo (ID_ALCANCE, DESCRIPCION, NOMBRE) VALUES
+  (1, 'Local, bajo 50km','Local'),
+  (2, 'Regional, 50–200km','Regional'),
+  (3, 'Global, >200km','Global');
+
+INSERT INTO clasificacion_sismo (ID_CLASIFICACION, KM_PROFUNDIDAD_DESDE, KM_PROFUNDIDAD_HASTA, NOMBRE) VALUES
+  (1, 0,70,'Superficial'),
+  (2, 70,300,'Intermedio'),
+  (3, 300,700,'Profundo');
+
+INSERT INTO origen_de_generacion (ID_ORIGEN, DESCRIPCION, NOMBRE) VALUES
+  (1, 'Tectónico','Tectónico'),
+  (2, 'Volcánico','Volcánico'),
+  (3, 'Artificial','Artificial');
+
+INSERT INTO estado (ID, AMBITO, NOMBRE_ESTADO) VALUES
+  (1, 'EventoSismico','AutoDetectado'),
+  (2, 'EventoSismico','PendienteRevision'),
+  (3, 'EventoSismico','BloqueadoEnRevision'),
+  (4, 'EventoSismico','Rechazado'),
+  (5, 'EventoSismico','Aprobado');
+
+INSERT INTO tipo_de_dato (ID_TIPO, DENOMINACION, NOMBRE_UNIDAD_MEDIDA, VALOR_UMBRAL) VALUES
+  (1, 'Aceleración','g',0.01),
+  (2, 'Velocidad','m/s',0.001),
+  (3, 'Desplazamiento','mm',0.1);
+
+INSERT INTO estacion_sismologica (CODIGO_ESTACION, DOCUMENTO_CERT_ADQ, FECHA_SOLICITUD_CERT, LATITUD, LONGITUD, NOMBRE, NRO_CERT_ADQUISICION) VALUES
+  ('EST-001','DOC-1001','2023-01-15',40.41,-3.70,'Madrid Centro','CERT-2001'),
+  ('EST-002','DOC-1002','2023-02-20',41.38,2.17,'Barcelona','CERT-2002'),
+  ('EST-003','DOC-1003','2023-03-05',37.98,-1.13,'Alicante','CERT-2003');
+
+INSERT INTO magnitud_ritcher (ID_MAGNITUD_RITCHER, NUMERO, DESCRIPCION_MAGNITUD) VALUES
+  (1, 4.5, 'Ritcher 4.5'),
+  (2, 5.0, 'Ritcher 5.0'),
+  (3, 3.8, 'Ritcher 3.8');
+
+INSERT INTO empleado (ID, APELLIDO, MAIL, NOMBRE, TELEFONO) VALUES
+  (1, 'Perez', 'juan.perez@example.com', 'Juan', 1122334455),
+  (2, 'Gomez', 'maria.gomez@example.com', 'Maria', 9876543210);
+
+INSERT INTO sismografo (IDENTIFICADOR, ID_ADQUISICION, NRO_SERIE, CODIGO_ESTACION) VALUES
+  ('SISMO-A',101,'SN-A001','EST-001'),
+  ('SISMO-B',102,'SN-B001','EST-002'),
+  ('SISMO-C',103,'SN-C001','EST-003');
+
+INSERT INTO detalle_muestra_sismica (ID_DETALLE_MUESTRA_SISMICA, ID_TIPO, VALOR) VALUES
+  (1,1,0.015),
+  (2,1,0.020),
+  (3,2,0.003),
+  (4,3,0.120),
+  (5,2,0.005);
+
+INSERT INTO muestra_sismica (ID_MUESTRA, FECHA_HORA_MUESTRA, ID_DETALLE_MUESTRA) VALUES
+  (1,'2025-05-01 08:00:00',1),
+  (2,'2025-05-01 08:00:01',2),
+  (3,'2025-05-01 08:00:02',3),
+  (4,'2025-05-01 08:00:03',4),
+  (5,'2025-05-01 08:00:04',5);
+
+INSERT INTO evento_sismico (
+    ID, -- Explicitly setting IDs for consistency with foreign keys
+    FECHA_HORA_FIN,
+    FECHA_HORA_OCURRENCIA,
+    LATITUD_EPICENTRO,
+    LONGITUD_EPICENTRO,
+    LATITUD_HIPOCENTRO,
+    LONGITUD_HIPOCENTRO,
+    VALOR_MAGNITUD,
+    ALCANCE_SISMO_ID,
+    CLASIFICACION_SISMO_ID,
+    ESTADO_ACTUAL_ID,
+    MAGNITUD_RITCHER_ID,
+    ORIGEN_GENERACION_ID
+) VALUES
+  (1, '2025-05-01 08:01:00','2025-05-01 08:00:00',40.42,-3.69,39.90,-3.50,4.5,1,1,1,1,1),
+  (2, '2025-05-01 09:01:00','2025-05-01 09:00:00',41.39,2.16,40.00,1.50,5.0,2,2,2,2,2),
+  (3, '2025-05-01 10:01:00','2025-05-01 10:00:00',37.99,-1.12,36.50,-1.00,3.8,3,3,1,3,3);
+
+INSERT INTO serie_temporal (ID_SERIE, CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_MUESTRA_SISMICA, ID_SISMOGRAFO, EVENTO_SISMICO_ID) VALUES
+  (1, 'OK','2025-05-01 08:00:00','2025-05-01 08:00:10',100.0,1,'SISMO-A',1),
+  (2, 'ALARMA','2025-05-01 09:00:00','2025-05-01 09:00:10',50.0,2,'SISMO-B',2),
+  (3, 'OK','2025-05-01 10:00:00','2025-05-01 10:00:10',200.0,3,'SISMO-C',3);
+
+-- Cambios de estado - REMOVED ID FROM INSERT STATEMENT
+INSERT INTO cambio_estado (EVENTO_SISMICO_ID, ESTADO_ID, FECHA_HORA_INICIO, FECHA_HORA_FIN, RESPONSABLE_ID) VALUES
+  (1, 1, '2025-05-01 08:00:00', '2025-05-01 08:00:30', NULL),
+  (1, 2, '2025-05-01 08:00:30', '2025-05-01 08:01:00', 1),
+  (2, 2, '2025-05-01 09:00:00', '2025-05-01 09:00:30', NULL),
+  (2, 4, '2025-05-01 09:00:30', '2025-05-01 09:01:00', 2),
+  (3, 1, '2025-05-01 10:00:00', '2025-05-01 10:00:30', NULL),
+  (3, 4, '2025-05-01 10:00:30', '2025-05-01 10:01:00', 1);
