@@ -48,4 +48,8 @@ public class CambioEstado {
 
     public EventoSismico getEventoSismico() { return eventoSismico; }
     public void setEventoSismico(EventoSismico eventoSismico) { this.eventoSismico = eventoSismico; }
+
+    public boolean esEstadoActual() {
+        return fechaHoraFin == null;
+    }
 }

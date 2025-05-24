@@ -10,6 +10,7 @@ import javax.annotation.processing.Generated;
 
 // DTOs
 import com.grupo7.application.dto.TipoDeDatoDTO;
+import com.grupo7.application.dto.EventoSismicoDTO;
 
 // Gestor Service
 import com.grupo7.application.service.GestorRevisionManualService;
@@ -27,7 +28,10 @@ public class GestorRevisionManualController {
 
     // RegistrarRevisionManual
     @GetMapping("/registrarRevisionManual")
-    // Implementación 
+    public ResponseEntity<List<EventoSismicoDTO>> registrarRevisionManual() {
+        List<EventoSismicoDTO> eventosSismicos = gestorRevisionManualService.registrarRevisionManual();
+        return ResponseEntity.ok(eventosSismicos);
+    }
 
     // mostrar todos los tipos de datos
     @GetMapping("/tipoDeDato")

@@ -57,6 +57,14 @@ public class EventoSismico {
     public EventoSismico() {
     }
 
+    public EventoSismico(Long id, LocalDateTime fechaHoraFin, LocalDateTime fechaHoraOcurrencia, Double latitudEpicentro, Double longitudEpicentro, Double latitudHipocentro, Double longitudHipocentro, Double valorMagnitud) {
+        this.id = id;
+        this.fechaHoraFin = fechaHoraFin;
+        this.fechaHoraOcurrencia = fechaHoraOcurrencia;
+        this.latitudEpicentro = latitudEpicentro;
+        this.longitudEpicentro = longitudEpicentro;
+    }
+
     // Getters y setters
 
     public Long getId() {
