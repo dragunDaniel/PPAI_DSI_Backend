@@ -15,6 +15,35 @@ public class EstadoDTO {
         this.nombreEstado = nombreEstado;
     }
 
+    public boolean sosBloqueado() {
+        return this.nombreEstado.equals("Bloqueado");
+    }
+
+    public boolean sosPendienteDeRevision() {
+        return this.nombreEstado.equals("PendienteDeRevision");
+    }
+
+    public boolean sosAutoDetectado() {
+        return this.nombreEstado.equals("AutoDetectado");
+    }
+
+    public boolean sosRevisionManual() {
+        return this.nombreEstado.equals("RevisionManual");
+    }
+
+    public boolean sosRevisionAutomatica() {
+        return this.nombreEstado.equals("RevisionAutomatica");
+    }
+
+    public boolean sosRevisionFinalizada() {
+        return this.nombreEstado.equals("RevisionFinalizada");
+    }
+
+    public boolean sosRevisionCancelada() {
+        return this.nombreEstado.equals("RevisionCancelada");
+    }
+
+    // Getters y setters
     public Long getId() {
         return id;
     }

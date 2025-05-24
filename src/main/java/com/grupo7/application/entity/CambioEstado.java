@@ -30,6 +30,14 @@ public class CambioEstado {
     @JoinColumn(name = "EVENTO_SISMICO_ID")
     private EventoSismico eventoSismico;
 
+    // Saber si es Estado Actual
+    public boolean esEstadoActual() {
+        if (this.fechaHoraFin == null) {
+            return true;
+        }
+        return false;
+    }
+
     // Getters y setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -49,7 +57,4 @@ public class CambioEstado {
     public EventoSismico getEventoSismico() { return eventoSismico; }
     public void setEventoSismico(EventoSismico eventoSismico) { this.eventoSismico = eventoSismico; }
 
-    public boolean esEstadoActual() {
-        return fechaHoraFin == null;
-    }
 }

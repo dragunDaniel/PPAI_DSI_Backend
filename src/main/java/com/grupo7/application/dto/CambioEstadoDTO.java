@@ -24,6 +24,10 @@ public class CambioEstadoDTO {
         this.eventoSismicoId = eventoSismicoId;
     }
 
+    public boolean esEstadoActual() {
+        return fechaHoraFin == null;
+    }
+
     public Long getId() {
         return id;
     }

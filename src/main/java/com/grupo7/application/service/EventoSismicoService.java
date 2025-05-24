@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 // Entities
 import com.grupo7.application.entity.EventoSismico;
@@ -16,12 +17,15 @@ import com.grupo7.application.repository.EventoSismicoRepository;
 // DTOs
 import com.grupo7.application.dto.EventoSismicoDTO;
 import com.grupo7.application.dto.CambioEstadoDTO;
+import com.grupo7.application.dto.EstadoDTO;
+
 
 // Mappers
 import com.grupo7.application.mapper.EventoSismicoMapper;
 
 // Services 
 import com.grupo7.application.service.CambioEstadoService;
+import com.grupo7.application.service.EstadoService;
 
 @Service
 public class EventoSismicoService {
@@ -29,12 +33,14 @@ public class EventoSismicoService {
     private final EventoSismicoRepository eventoSismicoRepository;
     private final EventoSismicoMapper eventoSismicoMapper;
     private final CambioEstadoService cambioEstadoService;
+    private final EstadoService estadoService;
 
     @Autowired
-    public EventoSismicoService(EventoSismicoRepository eventoSismicoRepository, EventoSismicoMapper eventoSismicoMapper, CambioEstadoService cambioEstadoService) {
+    public EventoSismicoService(EventoSismicoRepository eventoSismicoRepository, EventoSismicoMapper eventoSismicoMapper, CambioEstadoService cambioEstadoService, EstadoService estadoService) {
         this.eventoSismicoRepository = eventoSismicoRepository;
         this.eventoSismicoMapper = eventoSismicoMapper;
         this.cambioEstadoService = cambioEstadoService;
+        this.estadoService = estadoService;
     }
 
     // Buscar todos los Autorealizados o Pendientes de Revision 
@@ -68,6 +74,35 @@ public class EventoSismicoService {
         // Retornando los datos principales (DTO) de los eventos sismicos filtrados
         return eventosSismicosFiltradosDTO;
     } 
+
+    // Bloquear un evento sismico especifico 
+    public void bloquearPorRevision(Long id, LocalDateTime fechaHoraActual, Long idEstadoBloqueado) {
+        
+        // Mientras haya cambios de esatdo
+        for (CambioEstadoDTO cambioEstado : cambioEstadoService.obtenerTodosDTO()) {
+            
+            // Si el cambio de estado iterado es del evento sismico seleccionado y es el estado actual
+            if (cambioEstado.getEventoSismicoId() != null && cambioEstado.getEventoSismicoId().equals(id) && cambioEstado.esEstadoActual()) {
+                
+                // Finalizar el estado actual colocando fecha de fin al cambio de estado
+                cambioEstado.setFechaHoraFin(fechaHoraActual);
+                cambioEstadoService.actualizarDesdeDTO(cambioEstado.getId(), cambioEstado);
+
+                // Instanciando un nuevo Cambio de Estado para este objeto, con el estado bloqueado
+                CambioEstadoDTO cambioEstadoBloqueado = new CambioEstadoDTO();
+                cambioEstadoBloqueado.setFechaHoraInicio(fechaHoraActual);
+                cambioEstadoBloqueado.setEventoSismicoId(id);
+                cambioEstadoBloqueado.setEstadoId(idEstadoBloqueado);
+                
+                // Creación del nuevo Cambio de Estado
+                cambioEstadoService.crearDesdeDTO(cambioEstadoBloqueado);
+                
+                // Terminado el ciclo
+                break; 
+            }
+        }
+    }
+
 
     public List<EventoSismico> obtenerTodosNoDTO() {
         List<EventoSismico> entidades = eventoSismicoRepository.findAll();

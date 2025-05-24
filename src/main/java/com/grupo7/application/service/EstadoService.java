@@ -42,9 +42,14 @@ public class EstadoService {
         return obtenerPorId(id).getNombreEstado().equals("AutoDetectado");
     }
 
-    // EstadoService.java
+    // Saber si el estado es PendienteDeRevision o no
     public boolean sosPendienteDeRevision(Long id) {
-        return obtenerPorId(id).getNombreEstado().equals("PendienteDeRevision"); // Sin espacio
+        return obtenerPorId(id).getNombreEstado().equals("PendienteDeRevision"); 
+    }
+
+    // Saber si el estado es Bloqueado
+    public boolean sosBloqueado(Long id) {
+        return obtenerPorId(id).getNombreEstado().equals("Bloqueado");
     }
 
     public List<EstadoDTO> obtenerTodosDTO() {

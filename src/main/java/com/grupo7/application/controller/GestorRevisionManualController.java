@@ -33,11 +33,11 @@ public class GestorRevisionManualController {
         return ResponseEntity.ok(eventosSismicos);
     }
 
-    // mostrar todos los tipos de datos
-    @GetMapping("/tipoDeDato")
-    public ResponseEntity<List<TipoDeDatoDTO>> mostrarTiposDeDato() {
-        List<TipoDeDatoDTO> tiposDeDato = gestorRevisionManualService.mostrarTiposDeDato();
-        return ResponseEntity.ok(tiposDeDato);
+    // tomarEventoSismicoSeleccionado
+    @PostMapping("/tomarEventoSismicoSeleccionado")
+    public ResponseEntity<Void> tomarEventoSismicoSeleccionado(@RequestBody EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
+        gestorRevisionManualService.tomarEventoSismicoSeleccionado(eventoSismicoSeleccionadoDTO);
+        return ResponseEntity.ok().build(); // <- ¡Agrega .build()!
     }
-
+        
 }

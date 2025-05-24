@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class EventoSismicoDTO {
 
+    private Long id;
     private LocalDateTime fechaHoraOcurrencia;
     private Double latitudEpicentro;
     private Double longitudEpicentro;
@@ -23,6 +24,14 @@ public class EventoSismicoDTO {
     }
 
     // Getters y setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public LocalDateTime getFechaHoraOcurrencia() {
         return fechaHoraOcurrencia;
     }
