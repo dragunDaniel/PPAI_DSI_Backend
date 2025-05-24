@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+import javax.annotation.processing.Generated;
+
 // DTOs
 import com.grupo7.application.dto.TipoDeDatoDTO;
 
@@ -22,6 +24,10 @@ public class GestorRevisionManualController {
     public GestorRevisionManualController(GestorRevisionManualService gestorRevisionManualService) {
         this.gestorRevisionManualService = gestorRevisionManualService;
     }
+
+    // RegistrarRevisionManual
+    @GetMapping("/registrarRevisionManual")
+    // Implementación 
 
     // mostrar todos los tipos de datos
     @GetMapping("/tipoDeDato")

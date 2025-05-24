@@ -24,6 +24,13 @@ public class GestorRevisionManualService {
         this.tipoDeDatoService = tipoDeDatoService;
     }
 
+    // Servicios para Registrar Revision Manual
+    
+    // Buscar todos los eventos sismicos no revisados 
+    public List<EventoSismicoDTO> buscarEventosSismicosNoRevisados() {
+        return eventoSismicoService.buscarEventosSismicosNoRevisados();
+    }
+
     // mostrar todos los Tipos de Datos
     public List<TipoDeDatoDTO> mostrarTiposDeDato() {
         return tipoDeDatoService.obtenerTodosDTO();
