@@ -1,0 +1,49 @@
+/* App.css */
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6;
+  /* bg-gray-100 */
+  padding: 1rem;
+  /* p-4 */
+}
+
+.manual-revision-button {
+  padding: 0.75rem 1.5rem;
+  /* px-6 py-3 */
+  background-color: #2563eb;
+  /* bg-blue-600 */
+  color: white;
+  /* text-white */
+  font-weight: 600;
+  /* font-semibold */
+  border-radius: 0.5rem;
+  /* rounded-lg */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  /* shadow-md */
+  transition: all 300ms ease-in-out;
+  /* transition duration-300 ease-in-out */
+  transform: scale(1);
+  /* Initial state for transform hover:scale-105 */
+  border: none;
+  /* Remove default button border */
+  cursor: pointer;
+  /* Indicate it's clickable */
+}
+
+.manual-revision-button:hover {
+  background-color: #1d4ed8;
+  /* hover:bg-blue-700 */
+  transform: scale(1.05);
+  /* hover:scale-105 */
+}
+
+.manual-revision-button:focus {
+  outline: none;
+  /* focus:outline-none */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.75);
+  /* focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 */
+}

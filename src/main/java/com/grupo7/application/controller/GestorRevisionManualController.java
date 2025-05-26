@@ -37,7 +37,7 @@ public class GestorRevisionManualController {
     @PostMapping("/tomarEventoSismicoSeleccionado")
     public ResponseEntity<Void> tomarEventoSismicoSeleccionado(@RequestBody EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
         gestorRevisionManualService.tomarEventoSismicoSeleccionado(eventoSismicoSeleccionadoDTO);
-        return ResponseEntity.ok().build(); // <- ¡Agrega .build()!
+        return ResponseEntity.ok().build();
     }
         
 }
