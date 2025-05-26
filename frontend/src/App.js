@@ -4,25 +4,31 @@ function App() {
   // State to manage which "page" is currently active.
   const [currentPage, setCurrentPage] = useState("home");
 
-  // State to store fetched data (list of seismic events)
+  // State to store fetched data (list of seismic events for manual revision)
   const [seismicEvents, setSeismicEvents] = useState([]);
   // State to store the currently selected seismic event object
   const [selectedEvent, setSelectedEvent] = useState(null);
-  // State to manage loading status for fetching events
+  // State to manage loading status for fetching events (manual revision)
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
-  // State to manage loading status for confirming selection
+  // State to manage loading status for confirming selection (manual revision)
   const [isConfirming, setIsConfirming] = useState(false);
-  // State to store error messages for fetching events
+  // State to store error messages for fetching events (manual revision)
   const [fetchError, setFetchError] = useState(null);
-  // State to store error messages for confirming selection
+  // State to store error messages for confirming selection (manual revision)
   const [confirmError, setConfirmError] = useState(null);
-  // State to store success message after confirming selection
+  // State to store success message after confirming selection (manual revision)
   const [confirmSuccess, setConfirmSuccess] = useState(null);
-  // State to store the DatosRegistradosDTO received after selection
+  // State to store the DatosRegistradosDTO received after selection (manual revision)
   const [registeredData, setRegisteredData] = useState(null);
 
-  // Function to handle the button click and change the page, also fetches data.
-  const handleButtonClick = async () => {
+  // --- NEW STATES FOR "CAMBIOS DE ESTADO" ---
+  const [cambiosEstadoData, setCambiosEstadoData] = useState([]);
+  const [isLoadingCambiosEstado, setIsLoadingCambiosEstado] = useState(false);
+  const [cambiosEstadoError, setCambiosEstadoError] = useState(null);
+  // ------------------------------------------
+
+  // Function to handle the "Registrar Revisión Manual" button click and change the page, also fetches data.
+  const handleManualRevisionClick = async () => {
     setCurrentPage("manualRevision"); // Change to the manual revision page
 
     setIsLoadingEvents(true); // Set loading state to true for events fetch
@@ -63,7 +69,44 @@ function App() {
     }
   };
 
-  // Function to handle selecting a seismic event from the list
+  // Function to handle the "Opciones de developer" button click
+  const handleDeveloperOptionsClick = async () => {
+    setCurrentPage("cambiosDeEstado"); // Set to the new page for developer options
+
+    setIsLoadingCambiosEstado(true); // Start loading for this specific data
+    setCambiosEstadoError(null); // Clear previous errors
+    setCambiosEstadoData([]); // Clear previous data
+
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/cambiosDeEstado/cambiEstado"
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        setCambiosEstadoData(data);
+      } else {
+        console.warn("API response for cambios de estado is not an array:", data);
+        setCambiosEstadoData([]);
+        setCambiosEstadoError("Formato de datos inesperado para cambios de estado.");
+      }
+      console.log("Fetched cambios de estado data:", data);
+    } catch (error) {
+      console.error("Error fetching cambios de estado:", error);
+      setCambiosEstadoError(
+        `Error al cargar cambios de estado: ${error.message}.`
+      );
+    } finally {
+      setIsLoadingCambiosEstado(false);
+    }
+  };
+
+  // Function to handle selecting a seismic event from the list (manual revision)
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
     setConfirmError(null);
@@ -71,7 +114,7 @@ function App() {
     setRegisteredData(null); // Clear registered data on new selection
   };
 
-  // Function to send the selected event data to the backend
+  // Function to send the selected event data to the backend (manual revision)
   const handleConfirmSelection = async () => {
     if (
       !selectedEvent ||
@@ -130,6 +173,7 @@ function App() {
   // Function to go back to the home page.
   const handleGoBack = () => {
     setCurrentPage("home");
+    // Clear all states related to other pages when going back to home
     setSeismicEvents([]);
     setSelectedEvent(null);
     setIsLoadingEvents(false);
@@ -137,7 +181,10 @@ function App() {
     setFetchError(null);
     setConfirmError(null);
     setConfirmSuccess(null);
-    setRegisteredData(null); // Clear registered data when going back
+    setRegisteredData(null);
+    setCambiosEstadoData([]);
+    setIsLoadingCambiosEstado(false);
+    setCambiosEstadoError(null);
   };
 
   // Function to go back to the manual revision page from the display data page
@@ -147,7 +194,15 @@ function App() {
     setConfirmSuccess(null); // Clear success message
     setConfirmError(null); // Clear any errors
     // If you want to re-load events when going back to manual revision:
-    // handleButtonClick();
+    // handleManualRevisionClick(); // Re-fetch events
+  };
+
+  // Function to go back from "cambiosDeEstado" page to home
+  const handleGoBackFromCambiosEstado = () => {
+    setCurrentPage("home");
+    setCambiosEstadoData([]);
+    setIsLoadingCambiosEstado(false);
+    setCambiosEstadoError(null);
   };
 
   // Common styles for buttons
@@ -174,6 +229,7 @@ function App() {
     ...buttonStyle,
     backgroundColor: "#cccccc",
     cursor: "not-allowed",
+    color: "#666", // Darker text for greyed out
   };
 
   // Style for secondary buttons (e.g., back buttons)
@@ -241,9 +297,25 @@ function App() {
           <h1 style={{ color: "#2c3e50", marginBottom: "30px" }}>
             Herramienta de Análisis Sísmico
           </h1>
-          <button onClick={handleButtonClick} style={primaryButtonStyle}>
-            Registrar Revisión Manual
-          </button>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <button onClick={handleManualRevisionClick} style={primaryButtonStyle}>
+              Registrar Revisión Manual
+            </button>
+            {/* Functional "Opciones de developer" button */}
+            <button onClick={handleDeveloperOptionsClick} style={secondaryButtonStyle}>
+              Opciones de Developer
+            </button>
+            <button disabled style={disabledButtonStyle}>
+              Administrar Parámetros (Próximamente)
+            </button>
+          </div>
         </div>
       )}
 
@@ -348,7 +420,15 @@ function App() {
               </div>
 
               {selectedEvent && (
-                <div style={{ marginTop: "20px", padding: "15px", border: "1px solid #e0e0e0", borderRadius: "8px", backgroundColor: "#fdfdfd" }}>
+                <div
+                  style={{
+                    marginTop: "20px",
+                    padding: "15px",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: "8px",
+                    backgroundColor: "#fdfdfd",
+                  }}
+                >
                   <h2 style={{ color: "#34495e", marginBottom: "10px" }}>
                     Detalles del Evento Seleccionado
                   </h2>
@@ -382,7 +462,7 @@ function App() {
         </div>
       )}
 
-      {/* Display Registered Data Page */}
+      {/* Display Registered Data Page (Manual Revision Result) */}
       {currentPage === "displayRegisteredData" && (
         <div style={{ padding: "20px 0" }}>
           <h1 style={{ color: "#2c3e50", marginBottom: "20px" }}>
@@ -406,14 +486,22 @@ function App() {
             </div>
           ) : (
             // Only show this message if there was an error AND no registered data
-            !confirmSuccess && !confirmError && (
+            !confirmSuccess &&
+            !confirmError && (
               <p style={{ textAlign: "center", color: "#666" }}>
                 No se encontraron datos para mostrar.
               </p>
             )
           )}
 
-          <div style={{ marginTop: "30px", display: "flex", justifyContent: "center", gap: "10px" }}>
+          <div
+            style={{
+              marginTop: "30px",
+              display: "flex",
+              justifyContent: "center",
+              gap: "10px",
+            }}
+          >
             <button
               onClick={handleGoBackToManualRevision}
               style={purpleButtonStyle}
@@ -424,6 +512,76 @@ function App() {
               Volver al Inicio
             </button>
           </div>
+        </div>
+      )}
+
+      {/* NEW: Cambios de Estado Page */}
+      {currentPage === "cambiosDeEstado" && (
+        <div style={{ padding: "20px 0" }}>
+          <h1 style={{ color: "#2c3e50", marginBottom: "20px" }}>
+            Opciones de Developer - Cambios de Estado
+          </h1>
+
+          {isLoadingCambiosEstado && (
+            <p style={{ textAlign: "center", color: "#555" }}>
+              Cargando datos de cambios de estado...
+            </p>
+          )}
+
+          {cambiosEstadoError && (
+            <p style={errorMessageStyle}>Error: {cambiosEstadoError}</p>
+          )}
+
+          {!isLoadingCambiosEstado &&
+            !cambiosEstadoError &&
+            cambiosEstadoData.length === 0 && (
+              <p
+                style={{ textAlign: "center", color: "#666", padding: "20px 0" }}
+              >
+                No hay datos de cambios de estado disponibles.
+              </p>
+            )}
+
+          {!isLoadingCambiosEstado &&
+            !cambiosEstadoError &&
+            cambiosEstadoData.length > 0 && (
+              <div>
+                <h2 style={{ color: "#34495e", marginBottom: "15px" }}>
+                  Datos de Cambios de Estado:
+                </h2>
+                <div
+                  style={{
+                    maxHeight: "500px",
+                    overflowY: "auto",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: "8px",
+                    padding: "10px",
+                    backgroundColor: "#f9f9f9",
+                  }}
+                >
+                  {cambiosEstadoData.map((item, index) => (
+                    <div
+                      key={index} // Using index as key is okay if items don't reorder or get deleted
+                      style={{
+                        border: "1px solid #e0e0e0",
+                        padding: "15px",
+                        margin: "10px 0",
+                        borderRadius: "8px",
+                        backgroundColor: "#ffffff",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                      }}
+                    >
+                      <pre style={preStyle}>
+                        {JSON.stringify(item, null, 2)}
+                      </pre>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          <button onClick={handleGoBackFromCambiosEstado} style={purpleButtonStyle}>
+            Volver a la Pantalla Principal
+          </button>
         </div>
       )}
     </div>
