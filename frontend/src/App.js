@@ -22,9 +22,16 @@ function App() {
   const [registeredData, setRegisteredData] = useState(null);
 
   // --- NEW STATES FOR "CAMBIOS DE ESTADO" ---
-  const [cambiosEstadoData, setCambiosEstadoData] = useState([]);
+  // Store raw fetched data
+  const [cambiosEstadoRawData, setCambiosEstadoRawData] = useState([]);
+  // Store grouped data { 'eventoSismicoId': [change1, change2], ... }
+  const [cambiosEstadoGroupedData, setCambiosEstadoGroupedData] = useState({});
   const [isLoadingCambiosEstado, setIsLoadingCambiosEstado] = useState(false);
   const [cambiosEstadoError, setCambiosEstadoError] = useState(null);
+  // State to manage the ID of the expanded item in 'cambiosDeEstado' details (individual change)
+  const [expandedCambioEstadoId, setExpandedCambioEstadoId] = useState(null);
+  // State to manage the ID of the expanded seismic event group
+  const [expandedEventGroup, setExpandedEventGroup] = useState(null);
   // ------------------------------------------
 
   // Function to handle the "Registrar Revisión Manual" button click and change the page, also fetches data.
@@ -75,7 +82,10 @@ function App() {
 
     setIsLoadingCambiosEstado(true); // Start loading for this specific data
     setCambiosEstadoError(null); // Clear previous errors
-    setCambiosEstadoData([]); // Clear previous data
+    setCambiosEstadoRawData([]); // Clear previous raw data
+    setCambiosEstadoGroupedData({}); // Clear previous grouped data
+    setExpandedCambioEstadoId(null); // Clear any expanded item
+    setExpandedEventGroup(null); // Clear any expanded event group
 
     try {
       const response = await fetch(
@@ -89,10 +99,31 @@ function App() {
       const data = await response.json();
 
       if (Array.isArray(data)) {
-        setCambiosEstadoData(data);
+        setCambiosEstadoRawData(data); // Store raw data
+
+        // Group the data by eventoSismico.id
+        const grouped = data.reduce((acc, item) => {
+          const eventId = item.eventoSismico?.id;
+          if (eventId !== undefined && eventId !== null) {
+            if (!acc[eventId]) {
+              acc[eventId] = [];
+            }
+            acc[eventId].push(item);
+          } else {
+            // Handle items without an associated seismic event, e.g., group them under 'N/A'
+            if (!acc['N/A']) {
+              acc['N/A'] = [];
+            }
+            acc['N/A'].push(item);
+          }
+          return acc;
+        }, {});
+        setCambiosEstadoGroupedData(grouped); // Store grouped data
+
       } else {
         console.warn("API response for cambios de estado is not an array:", data);
-        setCambiosEstadoData([]);
+        setCambiosEstadoRawData([]);
+        setCambiosEstadoGroupedData({});
         setCambiosEstadoError("Formato de datos inesperado para cambios de estado.");
       }
       console.log("Fetched cambios de estado data:", data);
@@ -182,9 +213,12 @@ function App() {
     setConfirmError(null);
     setConfirmSuccess(null);
     setRegisteredData(null);
-    setCambiosEstadoData([]);
+    setCambiosEstadoRawData([]); // Clear raw data for dev options
+    setCambiosEstadoGroupedData({}); // Clear grouped data for dev options
     setIsLoadingCambiosEstado(false);
     setCambiosEstadoError(null);
+    setExpandedCambioEstadoId(null); // Also clear expanded item for dev options
+    setExpandedEventGroup(null); // Clear expanded event group
   };
 
   // Function to go back to the manual revision page from the display data page
@@ -200,9 +234,22 @@ function App() {
   // Function to go back from "cambiosDeEstado" page to home
   const handleGoBackFromCambiosEstado = () => {
     setCurrentPage("home");
-    setCambiosEstadoData([]);
+    setCambiosEstadoRawData([]); // Clear raw data
+    setCambiosEstadoGroupedData({}); // Clear grouped data
     setIsLoadingCambiosEstado(false);
     setCambiosEstadoError(null);
+    setExpandedCambioEstadoId(null); // Clear expanded item
+    setExpandedEventGroup(null); // Clear expanded event group
+  };
+
+  // NEW: Function to toggle the expanded state of a Cambio de Estado item (individual JSON)
+  const handleToggleCambioEstadoDetails = (id) => {
+    setExpandedCambioEstadoId(expandedCambioEstadoId === id ? null : id);
+  };
+
+  // NEW: Function to toggle the expanded state of a seismic event group
+  const handleToggleEventGroup = (eventId) => {
+    setExpandedEventGroup(expandedEventGroup === eventId ? null : eventId);
   };
 
   // Common styles for buttons
@@ -242,6 +289,30 @@ function App() {
   const purpleButtonStyle = {
     ...buttonStyle,
     backgroundColor: "#800080", // Purple
+  };
+
+  // Style for info/detail buttons
+  const infoButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: "#007bff", // Blue
+    padding: "8px 15px", // Slightly smaller for detail toggles
+    fontSize: "14px",
+    margin: "5px 0",
+  };
+
+  // Style for group toggle buttons
+  const groupToggleButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: "#3498db", // Lighter blue for group toggle
+    padding: "10px 20px",
+    fontSize: "15px",
+    marginTop: "10px",
+    marginBottom: "15px",
+    width: "100%", // Make it span full width of the group
+    textAlign: "left",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   };
 
   // Style for error messages
@@ -515,7 +586,7 @@ function App() {
         </div>
       )}
 
-      {/* NEW: Cambios de Estado Page */}
+      {/* NEW: Cambios de Estado Page (Grouped by EventoSismico ID) */}
       {currentPage === "cambiosDeEstado" && (
         <div style={{ padding: "20px 0" }}>
           <h1 style={{ color: "#2c3e50", marginBottom: "20px" }}>
@@ -534,7 +605,7 @@ function App() {
 
           {!isLoadingCambiosEstado &&
             !cambiosEstadoError &&
-            cambiosEstadoData.length === 0 && (
+            Object.keys(cambiosEstadoGroupedData).length === 0 && (
               <p
                 style={{ textAlign: "center", color: "#666", padding: "20px 0" }}
               >
@@ -544,14 +615,14 @@ function App() {
 
           {!isLoadingCambiosEstado &&
             !cambiosEstadoError &&
-            cambiosEstadoData.length > 0 && (
+            Object.keys(cambiosEstadoGroupedData).length > 0 && (
               <div>
                 <h2 style={{ color: "#34495e", marginBottom: "15px" }}>
-                  Datos de Cambios de Estado:
+                  Historial de Cambios de Estado por Evento Sísmico:
                 </h2>
                 <div
                   style={{
-                    maxHeight: "500px",
+                    maxHeight: "600px", // Increased height for more groups
                     overflowY: "auto",
                     border: "1px solid #e0e0e0",
                     borderRadius: "8px",
@@ -559,23 +630,104 @@ function App() {
                     backgroundColor: "#f9f9f9",
                   }}
                 >
-                  {cambiosEstadoData.map((item, index) => (
-                    <div
-                      key={index} // Using index as key is okay if items don't reorder or get deleted
-                      style={{
-                        border: "1px solid #e0e0e0",
-                        padding: "15px",
-                        margin: "10px 0",
-                        borderRadius: "8px",
-                        backgroundColor: "#ffffff",
-                        boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-                      }}
-                    >
-                      <pre style={preStyle}>
-                        {JSON.stringify(item, null, 2)}
-                      </pre>
-                    </div>
-                  ))}
+                  {/* Iterate through grouped data */}
+                  {Object.entries(cambiosEstadoGroupedData)
+                    .sort(([idA], [idB]) => {
+                      // Sort numerically, handling 'N/A' case if it exists
+                      if (idA === 'N/A') return 1;
+                      if (idB === 'N/A') return -1;
+                      return parseInt(idA, 10) - parseInt(idB, 10);
+                    })
+                    .map(([eventId, changes]) => (
+                      <div
+                        key={eventId}
+                        style={{
+                          border: "1px solid #d0d0d0",
+                          padding: "10px",
+                          margin: "15px 0",
+                          borderRadius: "8px",
+                          backgroundColor: "#f0f8ff", // Light blue for event groups
+                          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                        }}
+                      >
+                        <button
+                          onClick={() => handleToggleEventGroup(eventId)}
+                          style={groupToggleButtonStyle}
+                        >
+                          <span>
+                            EventoSismico ID:{" "}
+                            <strong style={{ fontSize: "1.1em" }}>{eventId}</strong>{" "}
+                            ({changes.length} cambios)
+                          </span>
+                          <span>
+                            {expandedEventGroup === eventId ? "▲" : "▼"}
+                          </span>
+                        </button>
+
+                        {expandedEventGroup === eventId && (
+                          <div style={{ padding: "10px" }}>
+                            {changes
+                              .sort((a, b) => new Date(a.fechaHoraInicio) - new Date(b.fechaHoraInicio)) // Sort changes within group by date
+                              .map((item) => (
+                                <div
+                                  key={item.id}
+                                  style={{
+                                    border: "1px solid #e0e0e0",
+                                    padding: "15px",
+                                    margin: "10px 0",
+                                    borderRadius: "8px",
+                                    backgroundColor: "#ffffff",
+                                    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                                  }}
+                                >
+                                  <p style={{ margin: "5px 0" }}>
+                                    <strong style={{ color: "#0056b3" }}>ID de Cambio:</strong>{" "}
+                                    {item.id}
+                                  </p>
+                                  <p style={{ margin: "5px 0" }}>
+                                    <strong style={{ color: "#0056b3" }}>Estado:</strong>{" "}
+                                    {item.estado?.nombreEstado || "N/A"} (Ámbito:{" "}
+                                    {item.estado?.ambito || "N/A"})
+                                  </p>
+                                  <p style={{ margin: "5px 0" }}>
+                                    <strong style={{ color: "#0056b3" }}>Inicio:</strong>{" "}
+                                    {item.fechaHoraInicio
+                                      ? new Date(item.fechaHoraInicio).toLocaleString()
+                                      : "N/A"}
+                                  </p>
+                                  <p style={{ margin: "5px 0" }}>
+                                    <strong style={{ color: "#0056b3" }}>Fin:</strong>{" "}
+                                    {item.fechaHoraFin
+                                      ? new Date(item.fechaHoraFin).toLocaleString()
+                                      : "Activo"}
+                                  </p>
+                                  <p style={{ margin: "5px 0" }}>
+                                    <strong style={{ color: "#0056b3" }}>Responsable:</strong>{" "}
+                                    {item.responsable
+                                      ? `${item.responsable.nombre} ${item.responsable.apellido} (${item.responsable.mail})`
+                                      : "N/A"}
+                                  </p>
+
+                                  <button
+                                    onClick={() => handleToggleCambioEstadoDetails(item.id)}
+                                    style={infoButtonStyle}
+                                  >
+                                    {expandedCambioEstadoId === item.id
+                                      ? "Ocultar Detalles JSON"
+                                      : "Ver Detalles JSON Completos"}
+                                  </button>
+
+                                  {expandedCambioEstadoId === item.id && (
+                                    <pre style={preStyle}>
+                                      {JSON.stringify(item, null, 2)}
+                                    </pre>
+                                  )}
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
                 </div>
               </div>
             )}

@@ -77,9 +77,6 @@ public class GestorRevisionManualService {
         // Obteniendo el estado bloqueado
         for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
             if (estadoDTO.sosBloqueadoEnRevision()) {
-                
-                System.out.println("LO ENCONTROOOOOO LO ENCONTROOOOOOOOOO");
-                // Estado bloqueado encontrado
                 estadoBloqueadoDTO = estadoDTO;
                 break;
             }
