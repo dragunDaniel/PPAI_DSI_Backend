@@ -53,9 +53,10 @@ public class EventoSismicoService {
         for (EventoSismico eventoSismico : obtenerTodosNoDTO()) {
             
             // busco el estado actual para el evento sismico iterado
-            CambioEstadoDTO cambioEstadoActual = cambioEstadoService.obtenerCambioEstadoActual(eventoSismico.getId());
+            CambioEstadoDTO cambioEstadoActual = cambioEstadoService.obtenerCambioEstadoActual(eventoSismico);
 
-            System.err.println("El cambioEstadoActual esta: " + cambioEstadoActual + "para el evento sismico: " + eventoSismico.getId());
+            System.out.println("El id del evento sismico es: " + eventoSismico.getId());
+            System.out.println("El cambioEstadoActual esta: " + cambioEstadoActual + " para el evento sismico: " + eventoSismico.getId());
 
             // Evitando llamar a cambios de estado con id nulo
             if (cambioEstadoActual == null || cambioEstadoActual.getEstadoId() == null) {

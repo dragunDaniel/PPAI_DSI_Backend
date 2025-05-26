@@ -117,33 +117,33 @@ INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FE
   ('ALARMA','2025-05-02 12:00:00','2025-05-02 12:00:10',110.0,10,'SISMO-C',8);
 
 -- Evento 1: Estado actual = Aprobado (NO pasa el filtro)
-INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id)
-VALUES (5, '2025-05-01 08:00:00', NULL, 1);
+INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id, evento_sismico_id)
+VALUES (5, '2025-05-01 08:00:00', NULL, 1, 1);
 
 -- Evento 2: Estado actual = PendienteDeRevision (SÍ pasa el filtro)
-INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id)
-VALUES (2, '2025-05-01 09:00:00', NULL, 2);
+INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id, evento_sismico_id)
+VALUES (2, '2025-05-01 09:00:00', NULL, 2, 2);
 
 -- Evento 3: Estado actual = Rechazado (NO pasa el filtro)
-INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id)
-VALUES (4, '2025-05-01 10:00:00', NULL, 3);
+INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id, evento_sismico_id)
+VALUES (4, '2025-05-01 10:00:00', NULL, 3, 3);
 
 -- Evento 4: Estado actual = AutoDetectado (SÍ pasa el filtro)
-INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id)
-VALUES (1, '2025-05-02 08:00:00', NULL, 4);
+INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id, evento_sismico_id)
+VALUES (1, '2025-05-02 08:00:00', NULL, 4, 4);
 
 -- Evento 5: Estado actual = BloqueadoEnRevision (NO pasa el filtro)
-INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id)
-VALUES (3, '2025-05-02 09:00:00', NULL, 1);
+INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id, evento_sismico_id)
+VALUES (3, '2025-05-02 09:00:00', NULL, 1, 5);
 
--- Evento 6: Estado actual = PendienteDeRevision (SÍ pasa el filtro)
-INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id)
-VALUES (2, '2025-05-02 10:00:00', NULL, 2);
+-- Evento 6: Estado actual = PendienteDeRevision (NO pasa el filtro por fechaHoraFin NO nula)
+INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id, evento_sismico_id)
+VALUES (2, '2025-05-02 10:00:00', '2025-05-02 10:00:00', 2, 6);
 
 -- Evento 7: Estado actual = EnRevisionFinal (NO pasa el filtro)
-INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id)
-VALUES (6, '2025-05-02 11:00:00', NULL, 3);
+INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id, evento_sismico_id)
+VALUES (6, '2025-05-02 11:00:00', NULL, 3, 7);
 
 -- Evento 8: Estado actual = AutoDetectado (SÍ pasa el filtro)
-INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id)
-VALUES (1, '2025-05-02 12:00:00', NULL, 4);
+INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id, evento_sismico_id)
+VALUES (1, '2025-05-02 12:00:00', NULL, 4, 8);

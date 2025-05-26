@@ -8,6 +8,7 @@ import java.util.Optional;
 
 // Entities
 import com.grupo7.application.entity.CambioEstado;
+import com.grupo7.application.entity.EventoSismico;
 
 // Repositories
 import com.grupo7.application.repository.CambioEstadoRepository;
@@ -36,9 +37,11 @@ public class CambioEstadoService {
     }
 
     // Obtener el cambio de estado actual para un evento sismico
-    public CambioEstadoDTO obtenerCambioEstadoActual(Long idEventoSismico) {
-        Optional<CambioEstado> cambioEstadoOpt = cambioEstadoRepository.findByEventoSismicoIdAndFechaHoraFinIsNull(idEventoSismico);
-    
+    public CambioEstadoDTO obtenerCambioEstadoActual(EventoSismico eventoSismico) {
+        Optional<CambioEstado> cambioEstadoOpt = cambioEstadoRepository.findByEventoSismicoAndFechaHoraFinIsNull(eventoSismico);
+        
+        System.out.println("el cambio de estado es: " + cambioEstadoOpt);
+
         if (cambioEstadoOpt.isPresent()) {
             return cambioEstadoMapper.toDTO(cambioEstadoOpt.get());
         } else {

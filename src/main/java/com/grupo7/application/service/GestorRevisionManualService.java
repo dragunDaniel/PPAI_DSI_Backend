@@ -13,9 +13,6 @@ import com.grupo7.application.dto.TipoDeDatoDTO;
 import com.grupo7.application.dto.EventoSismicoDTO;
 import com.grupo7.application.dto.EstadoDTO;
 
-//provisional
-import com.grupo7.application.dto.CambioEstadoDTO;
-
 // Servicios de Entidades
 import com.grupo7.application.service.TipoDeDatoService;
 import com.grupo7.application.service.EventoSismicoService;
@@ -62,7 +59,7 @@ public class GestorRevisionManualService {
 
     // Tomar Seleccion Evento Sismico - Flujo
     public void tomarEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
-        
+    
         // Bloquear EventoSismicoSeleccionado
         bloquearEventoSismicoSeleccionado(eventoSismicoSeleccionadoDTO);
     }
@@ -79,16 +76,16 @@ public class GestorRevisionManualService {
 
         // Obteniendo el estado bloqueado
         for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
-            if (estadoService.sosBloqueado(estadoDTO.getId())) {
-                System.out.println(estadoBloqueado.getNombreEstado());
+            if (estadoDTO.sosBloqueado()) {
+                
+                // Estado bloqueado encontrado
                 estadoBloqueado = estadoDTO;
                 break;
             }
         }
 
         // Bloquear es estado del evento sismico por revision
-        eventoSismicoService.bloquearPorRevision(eventoSismicoSeleccionadoDTO.getId(), obtenerHoraActual(), estadoBloqueado.getId());
-        
+        eventoSismicoService.bloquearPorRevision(eventoSismicoSeleccionadoDTO.getId(), obtenerHoraActual(), estadoBloqueado.getId());   
     }
 
 }
