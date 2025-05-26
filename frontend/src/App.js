@@ -32,19 +32,31 @@ function App() {
   const [expandedCambioEstadoId, setExpandedCambioEstadoId] = useState(null);
   // State to manage the ID of the expanded seismic event group
   const [expandedEventGroup, setExpandedEventGroup] = useState(null);
+  // NEW: State to control visibility of the whole "Cambios de Estado" history section
+  const [showCambiosEstadoHistory, setShowCambiosEstadoHistory] = useState(false);
   // ------------------------------------------
 
   // Function to handle the "Registrar Revisión Manual" button click and change the page, also fetches data.
   const handleManualRevisionClick = async () => {
     setCurrentPage("manualRevision"); // Change to the manual revision page
 
-    setIsLoadingEvents(true); // Set loading state to true for events fetch
-    setFetchError(null); // Clear any previous fetch errors
-    setSeismicEvents([]); // Clear any previous seismic events
-    setSelectedEvent(null); // Clear any previous selection
-    setConfirmError(null); // Clear any previous confirmation errors
-    setConfirmSuccess(null); // Clear any previous confirmation success messages
-    setRegisteredData(null); // Clear any previous registered data
+    // Reset states for manual revision page
+    setIsLoadingEvents(true);
+    setFetchError(null);
+    setSeismicEvents([]);
+    setSelectedEvent(null);
+    setConfirmError(null);
+    setConfirmSuccess(null);
+    setRegisteredData(null);
+
+    // Reset states for developer options page just in case
+    setCambiosEstadoRawData([]);
+    setCambiosEstadoGroupedData({});
+    setIsLoadingCambiosEstado(false);
+    setCambiosEstadoError(null);
+    setExpandedCambioEstadoId(null);
+    setExpandedEventGroup(null);
+    setShowCambiosEstadoHistory(false); // Ensure history is hidden when switching pages
 
     try {
       const response = await fetch(
@@ -80,12 +92,24 @@ function App() {
   const handleDeveloperOptionsClick = async () => {
     setCurrentPage("cambiosDeEstado"); // Set to the new page for developer options
 
-    setIsLoadingCambiosEstado(true); // Start loading for this specific data
-    setCambiosEstadoError(null); // Clear previous errors
-    setCambiosEstadoRawData([]); // Clear previous raw data
-    setCambiosEstadoGroupedData({}); // Clear previous grouped data
-    setExpandedCambioEstadoId(null); // Clear any expanded item
-    setExpandedEventGroup(null); // Clear any expanded event group
+    // Reset states for developer options page
+    setIsLoadingCambiosEstado(true);
+    setCambiosEstadoError(null);
+    setCambiosEstadoRawData([]);
+    setCambiosEstadoGroupedData({});
+    setExpandedCambioEstadoId(null);
+    setExpandedEventGroup(null);
+    setShowCambiosEstadoHistory(false); // Keep history hidden initially on page load
+
+    // Reset states for manual revision page just in case
+    setSeismicEvents([]);
+    setSelectedEvent(null);
+    setIsLoadingEvents(false);
+    setIsConfirming(false);
+    setFetchError(null);
+    setConfirmError(null);
+    setConfirmSuccess(null);
+    setRegisteredData(null);
 
     try {
       const response = await fetch(
@@ -219,6 +243,7 @@ function App() {
     setCambiosEstadoError(null);
     setExpandedCambioEstadoId(null); // Also clear expanded item for dev options
     setExpandedEventGroup(null); // Clear expanded event group
+    setShowCambiosEstadoHistory(false); // Ensure history is hidden
   };
 
   // Function to go back to the manual revision page from the display data page
@@ -240,6 +265,7 @@ function App() {
     setCambiosEstadoError(null);
     setExpandedCambioEstadoId(null); // Clear expanded item
     setExpandedEventGroup(null); // Clear expanded event group
+    setShowCambiosEstadoHistory(false); // Ensure history is hidden
   };
 
   // NEW: Function to toggle the expanded state of a Cambio de Estado item (individual JSON)
@@ -251,6 +277,31 @@ function App() {
   const handleToggleEventGroup = (eventId) => {
     setExpandedEventGroup(expandedEventGroup === eventId ? null : eventId);
   };
+
+  // NEW: Function to toggle the visibility of the entire "Cambios de Estado" history section
+  const handleToggleCambiosEstadoHistory = () => {
+    setShowCambiosEstadoHistory(!showCambiosEstadoHistory);
+    // Optionally, reset expanded groups/items when hiding the whole section
+    if (showCambiosEstadoHistory) {
+      setExpandedEventGroup(null);
+      setExpandedCambioEstadoId(null);
+    }
+  };
+
+  // NEW: Function to check if a Cambio de Estado happened in the last 30 minutes
+  const wasRecent = (fechaHoraInicio) => {
+    if (!fechaHoraInicio) return false;
+    const startTime = new Date(fechaHoraInicio).getTime();
+    const now = new Date().getTime();
+    const thirtyMinutesAgo = now - (30 * 60 * 1000); // 30 minutes in milliseconds
+    return startTime >= thirtyMinutesAgo;
+  };
+
+  // NEW: Function to check if any change in a group is recent
+  const anyChangeRecentInGroup = (changes) => {
+    return changes.some(change => wasRecent(change.fechaHoraInicio));
+  };
+
 
   // Common styles for buttons
   const buttonStyle = {
@@ -315,6 +366,19 @@ function App() {
     alignItems: "center",
   };
 
+  const mainToggleButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: "#2c3e50", // Darker, professional color
+    fontSize: "18px",
+    padding: "15px 30px",
+    marginBottom: "25px",
+    width: "fit-content", // Adjusts to content width
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+  };
+
   // Style for error messages
   const errorMessageStyle = {
     color: "#d32f2f",
@@ -347,6 +411,38 @@ function App() {
     whiteSpace: "pre-wrap",
     wordBreak: "break-all",
   };
+
+  // NEW: Styles for the animated collapsible section
+  const collapsibleContainerStyle = {
+    maxHeight: showCambiosEstadoHistory ? '1000px' : '0', // Adjust max-height as needed, larger for more content
+    overflow: 'hidden',
+    transition: 'max-height 0.7s ease-in-out, opacity 0.5s ease-in-out', // Smooth transition
+    opacity: showCambiosEstadoHistory ? '1' : '0',
+    marginTop: showCambiosEstadoHistory ? '20px' : '0',
+    padding: showCambiosEstadoHistory ? '10px' : '0',
+    border: showCambiosEstadoHistory ? '1px solid #e0e0e0' : 'none',
+    borderRadius: '8px',
+    backgroundColor: showCambiosEstadoHistory ? '#f9f9f9' : 'transparent',
+  };
+  
+  // NEW: Golden button style for individual changes
+  const goldenInfoButtonStyle = {
+    ...infoButtonStyle, // Base it on infoButtonStyle
+    backgroundColor: "#FFD700", // Golden color
+    color: "#333", // Darker text for contrast
+    fontWeight: "bold",
+    boxShadow: "0 4px 8px rgba(255,215,0,0.4)", // More prominent shadow
+  };
+
+  // NEW: Golden button style for group toggles
+  const goldenGroupToggleButtonStyle = {
+    ...groupToggleButtonStyle,
+    backgroundColor: "#FFD700", // Golden color
+    color: "#333", // Darker text for contrast
+    fontWeight: "bold",
+    boxShadow: "0 4px 8px rgba(255,215,0,0.4)", // More prominent shadow
+  };
+
 
   return (
     <div
@@ -590,8 +686,18 @@ function App() {
       {currentPage === "cambiosDeEstado" && (
         <div style={{ padding: "20px 0" }}>
           <h1 style={{ color: "#2c3e50", marginBottom: "20px" }}>
-            Opciones de Developer - Cambios de Estado
+            Opciones de Developer
           </h1>
+
+          {/* Main Toggle Button for the whole history section */}
+          <button
+            onClick={handleToggleCambiosEstadoHistory}
+            style={mainToggleButtonStyle}
+            disabled={isLoadingCambiosEstado || cambiosEstadoError || Object.keys(cambiosEstadoGroupedData).length === 0}
+          >
+            {showCambiosEstadoHistory ? "Ocultar " : "Historial de cambios de estados"}
+            {showCambiosEstadoHistory ? "▲" : "▼"}
+          </button>
 
           {isLoadingCambiosEstado && (
             <p style={{ textAlign: "center", color: "#555" }}>
@@ -609,128 +715,140 @@ function App() {
               <p
                 style={{ textAlign: "center", color: "#666", padding: "20px 0" }}
               >
-                No hay datos de cambios de estado disponibles.
+                No hay datos de cambios de estado disponibles para mostrar.
               </p>
             )}
 
-          {!isLoadingCambiosEstado &&
-            !cambiosEstadoError &&
-            Object.keys(cambiosEstadoGroupedData).length > 0 && (
-              <div>
-                <h2 style={{ color: "#34495e", marginBottom: "15px" }}>
-                  Historial de Cambios de Estado por Evento Sísmico:
-                </h2>
-                <div
-                  style={{
-                    maxHeight: "600px", // Increased height for more groups
-                    overflowY: "auto",
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "8px",
-                    padding: "10px",
-                    backgroundColor: "#f9f9f9",
-                  }}
-                >
-                  {/* Iterate through grouped data */}
-                  {Object.entries(cambiosEstadoGroupedData)
-                    .sort(([idA], [idB]) => {
-                      // Sort numerically, handling 'N/A' case if it exists
-                      if (idA === 'N/A') return 1;
-                      if (idB === 'N/A') return -1;
-                      return parseInt(idA, 10) - parseInt(idB, 10);
-                    })
-                    .map(([eventId, changes]) => (
-                      <div
-                        key={eventId}
-                        style={{
-                          border: "1px solid #d0d0d0",
-                          padding: "10px",
-                          margin: "15px 0",
-                          borderRadius: "8px",
-                          backgroundColor: "#f0f8ff", // Light blue for event groups
-                          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                        }}
-                      >
-                        <button
-                          onClick={() => handleToggleEventGroup(eventId)}
-                          style={groupToggleButtonStyle}
+          {/* Collapsible Container for the History */}
+          <div style={collapsibleContainerStyle}>
+            {!isLoadingCambiosEstado &&
+              !cambiosEstadoError &&
+              Object.keys(cambiosEstadoGroupedData).length > 0 && (
+                <div>
+                  <h2 style={{ color: "#34495e", marginBottom: "15px" }}>
+                    Historial de Cambios de Estado por Evento Sísmico:
+                  </h2>
+                  <div
+                    style={{
+                      maxHeight: "500px", // Adjusted max-height for the inner scroll area
+                      overflowY: "auto",
+                      border: "1px solid #e0e0e0",
+                      borderRadius: "8px",
+                      padding: "10px",
+                      backgroundColor: "#f9f9f9",
+                    }}
+                  >
+                    {/* Iterate through grouped data */}
+                    {Object.entries(cambiosEstadoGroupedData)
+                      .sort(([idA], [idB]) => {
+                        // Sort numerically, handling 'N/A' case if it exists
+                        if (idA === 'N/A') return 1;
+                        if (idB === 'N/A') return -1;
+                        return parseInt(idA, 10) - parseInt(idB, 10);
+                      })
+                      .map(([eventId, changes]) => (
+                        <div
+                          key={eventId}
+                          style={{
+                            border: "1px solid #d0d0d0",
+                            padding: "10px",
+                            margin: "15px 0",
+                            borderRadius: "8px",
+                            backgroundColor: "#f0f8ff", // Light blue for event groups
+                            boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                          }}
                         >
-                          <span>
-                            EventoSismico ID:{" "}
-                            <strong style={{ fontSize: "1.1em" }}>{eventId}</strong>{" "}
-                            ({changes.length} cambios)
-                          </span>
-                          <span>
-                            {expandedEventGroup === eventId ? "▲" : "▼"}
-                          </span>
+                          <button
+                            onClick={() => handleToggleEventGroup(eventId)}
+                            style={anyChangeRecentInGroup(changes) ? goldenGroupToggleButtonStyle : groupToggleButtonStyle}
+                        >
+                            <span>
+                                EventoSismico ID:{" "}
+                                <strong style={{ fontSize: "1.1em" }}>{eventId}</strong>{" "}
+                                ({changes.length} cambios)
+                            </span>
+                            {/* NEW: Display "Cambios recientes" if the button is golden */}
+                            {anyChangeRecentInGroup(changes) && (
+                                <span style={{ fontSize: "0.8em", color: "#8B4513", marginLeft: "10px" }}>
+                                    (Cambios recientes)
+                                </span>
+                            )}
+                            <span>
+                                {expandedEventGroup === eventId ? "▲" : "▼"}
+                            </span>
                         </button>
 
-                        {expandedEventGroup === eventId && (
-                          <div style={{ padding: "10px" }}>
-                            {changes
-                              .sort((a, b) => new Date(a.fechaHoraInicio) - new Date(b.fechaHoraInicio)) // Sort changes within group by date
-                              .map((item) => (
-                                <div
-                                  key={item.id}
-                                  style={{
-                                    border: "1px solid #e0e0e0",
-                                    padding: "15px",
-                                    margin: "10px 0",
-                                    borderRadius: "8px",
-                                    backgroundColor: "#ffffff",
-                                    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-                                  }}
-                                >
-                                  <p style={{ margin: "5px 0" }}>
-                                    <strong style={{ color: "#0056b3" }}>ID de Cambio:</strong>{" "}
-                                    {item.id}
-                                  </p>
-                                  <p style={{ margin: "5px 0" }}>
-                                    <strong style={{ color: "#0056b3" }}>Estado:</strong>{" "}
-                                    {item.estado?.nombreEstado || "N/A"} (Ámbito:{" "}
-                                    {item.estado?.ambito || "N/A"})
-                                  </p>
-                                  <p style={{ margin: "5px 0" }}>
-                                    <strong style={{ color: "#0056b3" }}>Inicio:</strong>{" "}
-                                    {item.fechaHoraInicio
-                                      ? new Date(item.fechaHoraInicio).toLocaleString()
-                                      : "N/A"}
-                                  </p>
-                                  <p style={{ margin: "5px 0" }}>
-                                    <strong style={{ color: "#0056b3" }}>Fin:</strong>{" "}
-                                    {item.fechaHoraFin
-                                      ? new Date(item.fechaHoraFin).toLocaleString()
-                                      : "Activo"}
-                                  </p>
-                                  <p style={{ margin: "5px 0" }}>
-                                    <strong style={{ color: "#0056b3" }}>Responsable:</strong>{" "}
-                                    {item.responsable
-                                      ? `${item.responsable.nombre} ${item.responsable.apellido} (${item.responsable.mail})`
-                                      : "N/A"}
-                                  </p>
-
-                                  <button
-                                    onClick={() => handleToggleCambioEstadoDetails(item.id)}
-                                    style={infoButtonStyle}
+                          {expandedEventGroup === eventId && (
+                            <div style={{ padding: "10px" }}>
+                              {changes
+                                .sort((a, b) => new Date(a.fechaHoraInicio) - new Date(b.fechaHoraInicio)) // Sort changes within group by date
+                                .map((item) => (
+                                  <div
+                                    key={item.id}
+                                    style={{
+                                      border: "1px solid #e0e0e0",
+                                      padding: "15px",
+                                      margin: "10px 0",
+                                      borderRadius: "8px",
+                                      backgroundColor: "#ffffff",
+                                      boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                                    }}
                                   >
-                                    {expandedCambioEstadoId === item.id
-                                      ? "Ocultar Detalles JSON"
-                                      : "Ver Detalles JSON Completos"}
-                                  </button>
+                                    <p style={{ margin: "5px 0" }}>
+                                      <strong style={{ color: "#0056b3" }}>ID de Cambio:</strong>{" "}
+                                      {item.id}
+                                    </p>
+                                    <p style={{ margin: "5px 0" }}>
+                                      <strong style={{ color: "#0056b3" }}>Estado:</strong>{" "}
+                                      {item.estado?.nombreEstado || "N/A"} (Ámbito:{" "}
+                                      {item.estado?.ambito || "N/A"})
+                                    </p>
+                                    <p style={{ margin: "5px 0" }}>
+                                      <strong style={{ color: "#0056b3" }}>Inicio:</strong>{" "}
+                                      {item.fechaHoraInicio
+                                        ? new Date(item.fechaHoraInicio).toLocaleString()
+                                        : "N/A"}
+                                    </p>
+                                    <p style={{ margin: "5px 0" }}>
+                                      <strong style={{ color: "#0056b3" }}>Fin:</strong>{" "}
+                                      {item.fechaHoraFin
+                                        ? new Date(item.fechaHoraFin).toLocaleString()
+                                        : "Activo"}
+                                    </p>
+                                    <p style={{ margin: "5px 0" }}>
+                                      <strong style={{ color: "#0056b3" }}>Responsable:</strong>{" "}
+                                      {item.responsable
+                                        ? `${item.responsable.nombre} ${item.responsable.apellido} (${item.responsable.mail})`
+                                        : "N/A"}
+                                    </p>
 
-                                  {expandedCambioEstadoId === item.id && (
-                                    <pre style={preStyle}>
-                                      {JSON.stringify(item, null, 2)}
-                                    </pre>
-                                  )}
-                                </div>
-                              ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                                    <button
+                                      onClick={() => handleToggleCambioEstadoDetails(item.id)}
+                                      // Still applying the goldenInfoButtonStyle to individual "Ver Detalles" button
+                                      // but the prompt was about the group button, so this stays as is.
+                                      style={infoButtonStyle}
+                                    >
+                                      {expandedCambioEstadoId === item.id
+                                        ? "Ocultar Detalles JSON"
+                                        : "Ver Detalles JSON Completos"}
+                                    </button>
+
+                                    {expandedCambioEstadoId === item.id && (
+                                      <pre style={preStyle}>
+                                        {JSON.stringify(item, null, 2)}
+                                      </pre>
+                                    )}
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+          </div> {/* End collapsibleContainerStyle */}
+
           <button onClick={handleGoBackFromCambiosEstado} style={purpleButtonStyle}>
             Volver a la Pantalla Principal
           </button>
