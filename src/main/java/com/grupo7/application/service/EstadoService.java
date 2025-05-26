@@ -21,19 +21,32 @@ import com.grupo7.application.mapper.EstadoMapper;
 @Service
 public class EstadoService {
 
-    private final EstadoRepository EstadoRepository;
-    private final EstadoMapper EstadoMapper;
+    private final EstadoRepository estadoRepository;
+    private final EstadoMapper estadoMapper;
 
     @Autowired
-    public EstadoService(EstadoRepository EstadoRepository, EstadoMapper EstadoMapper) {
-        this.EstadoRepository = EstadoRepository;
-        this.EstadoMapper = EstadoMapper;
+    public EstadoService(EstadoRepository estadoRepository, EstadoMapper estadoMapper) {
+        this.estadoRepository = estadoRepository;
+        this.estadoMapper = estadoMapper;
     }
+
+    // Obtener el estado BloqueadoEnRevision
+    public EstadoDTO obtenerEstadoBloqueado() {
+        Estado estado = estadoRepository.findByNombreEstado("BloqueadoEnRevision")
+            .orElseThrow(() -> new RuntimeException("Estado Bloqueado no encontrado"));
+        return estadoMapper.toDTO(estado);
+    }
+    
+    // Obtener la entidad a través de su id (buscar el objeto persistido)
+    public Estado obtenerEntidadPorId(Long id) {
+        return estadoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Estado no encontrado con id: " + id));
+    }    
 
     // Saber si soy un estado determinado por mi id
     public EstadoDTO obtenerPorId(Long id) {
-        return EstadoRepository.findById(id)
-            .map(EstadoMapper::toDTO)
+        return estadoRepository.findById(id)
+            .map(estadoMapper::toDTO)
             .orElseThrow(() -> new RuntimeException("Estado no encontrado con id: " + id));
     }
 
@@ -48,30 +61,30 @@ public class EstadoService {
     }
 
     // Saber si el estado es Bloqueado
-    public boolean sosBloqueado(Long id) {
-        return obtenerPorId(id).getNombreEstado().equals("Bloqueado");
+    public boolean sosBloqueadoEnRevision(Long id) {
+        return obtenerPorId(id).getNombreEstado().equals("BloqueadoEnRevision");
     }
 
     public List<EstadoDTO> obtenerTodosDTO() {
-        List<Estado> entidades = EstadoRepository.findAll();
+        List<Estado> entidades = estadoRepository.findAll();
         return entidades.stream()
-                        .map(EstadoMapper::toDTO)
+                        .map(estadoMapper::toDTO)
                         .toList();
     }
     
     public EstadoDTO crearDesdeDTO(EstadoDTO dto) {
-        Estado entidad = EstadoMapper.toEntity(dto);
-        Estado guardado = EstadoRepository.save(entidad);
-        return EstadoMapper.toDTO(guardado);
+        Estado entidad = estadoMapper.toEntity(dto);
+        Estado guardado = estadoRepository.save(entidad);
+        return estadoMapper.toDTO(guardado);
     }
     
     public EstadoDTO actualizarDesdeDTO(Long id, EstadoDTO dto) {
-        return EstadoRepository.findById(id)
+        return estadoRepository.findById(id)
             .map(existing -> {
-                Estado entidadActualizada = EstadoMapper.toEntity(dto);
+                Estado entidadActualizada = estadoMapper.toEntity(dto);
                 entidadActualizada.setId(id); // asegúrate de mantener el id
-                Estado guardado = EstadoRepository.save(entidadActualizada);
-                return EstadoMapper.toDTO(guardado);
+                Estado guardado = estadoRepository.save(entidadActualizada);
+                return estadoMapper.toDTO(guardado);
             })
             .orElseThrow(() -> new RuntimeException("Estado no encontrado con id: " + id));
     }

@@ -72,20 +72,21 @@ public class GestorRevisionManualService {
     // Bloquear Evento Sismico Seleccionado
     public void bloquearEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
         
-        EstadoDTO estadoBloqueado = new EstadoDTO();
+        EstadoDTO estadoBloqueadoDTO = new EstadoDTO();
 
         // Obteniendo el estado bloqueado
         for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
-            if (estadoDTO.sosBloqueado()) {
+            if (estadoDTO.sosBloqueadoEnRevision()) {
                 
+                System.out.println("LO ENCONTROOOOOO LO ENCONTROOOOOOOOOO");
                 // Estado bloqueado encontrado
-                estadoBloqueado = estadoDTO;
+                estadoBloqueadoDTO = estadoDTO;
                 break;
             }
         }
 
         // Bloquear es estado del evento sismico por revision
-        eventoSismicoService.bloquearPorRevision(eventoSismicoSeleccionadoDTO.getId(), obtenerHoraActual(), estadoBloqueado.getId());   
+        eventoSismicoService.bloquearPorRevision(eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoBloqueadoDTO);   
     }
 
 }

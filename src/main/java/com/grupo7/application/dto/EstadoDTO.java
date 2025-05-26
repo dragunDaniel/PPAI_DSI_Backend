@@ -15,8 +15,8 @@ public class EstadoDTO {
         this.nombreEstado = nombreEstado;
     }
 
-    public boolean sosBloqueado() {
-        return this.nombreEstado.equals("Bloqueado");
+    public boolean sosBloqueadoEnRevision() {
+        return this.nombreEstado.equals("BloqueadoEnRevision");
     }
 
     public boolean sosPendienteDeRevision() {

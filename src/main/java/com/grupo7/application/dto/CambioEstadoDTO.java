@@ -1,31 +1,38 @@
 package com.grupo7.application.dto;
 
+// Dependencies
 import java.time.LocalDateTime;
+
+// Entidades
+import com.grupo7.application.entity.CambioEstado;
+import com.grupo7.application.entity.Estado;
+import com.grupo7.application.entity.Empleado;
+import com.grupo7.application.entity.EventoSismico;
 
 public class CambioEstadoDTO {
 
     private Long id;
-    private Long estadoId;
+    private Estado estado;
     private LocalDateTime fechaHoraInicio;
     private LocalDateTime fechaHoraFin;
-    private Long responsableId;
-    private Long eventoSismicoId;
+    private Empleado responsable;
+    private EventoSismico eventoSismico;
 
     public CambioEstadoDTO() {
     }
 
-    public CambioEstadoDTO(Long id, Long estadoId, LocalDateTime fechaHoraInicio, LocalDateTime fechaHoraFin,
-                           Long responsableId, Long eventoSismicoId) {
+    public CambioEstadoDTO(Long id, Estado estado, LocalDateTime fechaHoraInicio, LocalDateTime fechaHoraFin,
+                           Empleado responsable, EventoSismico eventoSismico) {
         this.id = id;
-        this.estadoId = estadoId;
+        this.estado = estado;
         this.fechaHoraInicio = fechaHoraInicio;
         this.fechaHoraFin = fechaHoraFin;
-        this.responsableId = responsableId;
-        this.eventoSismicoId = eventoSismicoId;
+        this.responsable = responsable;
+        this.eventoSismico = eventoSismico;
     }
 
     public boolean esEstadoActual() {
-        return fechaHoraFin == null;
+        return this.fechaHoraFin == null;
     }
 
     public Long getId() {
@@ -36,12 +43,12 @@ public class CambioEstadoDTO {
         this.id = id;
     }
 
-    public Long getEstadoId() {
-        return estadoId;
+    public Estado getEstado() {
+        return estado;
     }
 
-    public void setEstadoId(Long estadoId) {
-        this.estadoId = estadoId;
+    public void setEstado(Estado estado) {
+        this.estado = estado;
     }
 
     public LocalDateTime getFechaHoraInicio() {
@@ -60,19 +67,19 @@ public class CambioEstadoDTO {
         this.fechaHoraFin = fechaHoraFin;
     }
 
-    public Long getResponsableId() {
-        return responsableId;
+    public Empleado getResponsable() {
+        return responsable;
     }
 
-    public void setResponsableId(Long responsableId) {
-        this.responsableId = responsableId;
+    public void setResponsable(Empleado responsable) {
+        this.responsable = responsable;
     }
 
-    public Long getEventoSismicoId() {
-        return eventoSismicoId;
+    public EventoSismico getEventoSismico() {
+        return eventoSismico;
     }
 
-    public void setEventoSismicoId(Long eventoSismicoId) {
-        this.eventoSismicoId = eventoSismicoId;
+    public void setEventoSismico(EventoSismico eventoSismico) {
+        this.eventoSismico = eventoSismico;
     }
 }

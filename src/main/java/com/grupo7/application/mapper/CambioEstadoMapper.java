@@ -1,21 +1,21 @@
 package com.grupo7.application.mapper;
 
-// Dependencies
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping; 
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
-// Entity
 import com.grupo7.application.entity.CambioEstado;
-
-// DTO
 import com.grupo7.application.dto.CambioEstadoDTO;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {
+    EstadoMapper.class,
+    EmpleadoMapper.class,
+    EventoSismicoMapper.class
+})
 public interface CambioEstadoMapper {
-    
-    @Mapping(source = "estado.id", target = "estadoId")
-    CambioEstadoDTO toDTO(CambioEstado cambioEstado);
 
-    @Mapping(target = "id", ignore = true) // Fundamental para no violar la clave primaria autogenerativa
+    CambioEstadoDTO toDTO(CambioEstado entity);
+
+    @Mapping(target = "id", ignore = true) // Evita problemas con ID auto-generado
     CambioEstado toEntity(CambioEstadoDTO dto);
 }
