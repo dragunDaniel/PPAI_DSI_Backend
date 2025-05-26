@@ -7,9 +7,9 @@ import jakarta.persistence.*;
 public class TipoDeDato {
 
     @Id
+    @Column(name = "id_tipo")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_TIPO") // <-- FIX 1: Map 'id' to 'ID_TIPO'
-    private Long id;
+    private Long id; 
 
     @Column(name = "DENOMINACION", nullable = false) // <-- FIX 2: Explicitly map 'denominacion'
     private String denominacion;

@@ -1,27 +1,28 @@
 package com.grupo7.application.dto;
 
+// Dependencies
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TipoDeDatoDTO {
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY) // Solo lectura para evitar seteos
     private Long id;
+
     private String denominacion;
     private String nombreUnidadMedida;
     private Double valorUmbral;
 
     // Constructor con todos los campos
-    public TipoDeDatoDTO(Long id, String denominacion, String nombreUnidadMedida, Double valorUmbral) {
-        this.id = id;
+    public TipoDeDatoDTO(String denominacion, String nombreUnidadMedida, Double valorUmbral) {
         this.denominacion = denominacion;
         this.nombreUnidadMedida = nombreUnidadMedida;
         this.valorUmbral = valorUmbral;
     }
 
-    // Getters y setters
-    public Long getId() {
-        return id;
-    }
+    // Getters y Setters
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getId() { // Sin Setter, PK Autoincremental
+        return id;
     }
 
     public String getDenominacion() {
