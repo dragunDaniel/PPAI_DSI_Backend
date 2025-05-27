@@ -3,7 +3,7 @@ package com.grupo7.application.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Set; // Changed from List to Set
+import java.util.Set;
 
 @Entity
 @Table(name = "serie_temporal")
@@ -38,7 +38,7 @@ public class SerieTemporal {
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     // Add @BatchSize for performance if you keep List/Set and don't always JOIN FETCH
     // @org.hibernate.annotations.BatchSize(size = 20)
-    private Set<MuestraSismica> muestrasSismicas = new HashSet<>(); // Changed to Set
+    private Set<MuestraSismica> muestrasSismicas = new HashSet<>();
 
     // Getters y setters
     public Long getId() { return id; }
@@ -62,11 +62,25 @@ public class SerieTemporal {
     public EventoSismico getEventoSismico() { return eventoSismico; }
     public void setEventoSismico(EventoSismico eventoSismico) { this.eventoSismico = eventoSismico; }
 
-    public Set<MuestraSismica> getMuestrasSismicas() { // Changed getter return type
+    public Set<MuestraSismica> getMuestrasSismicas() {
         return muestrasSismicas;
     }
 
-    public void setMuestrasSismicas(Set<MuestraSismica> muestrasSismicas) { // Changed setter parameter type
+    public void setMuestrasSismicas(Set<MuestraSismica> muestrasSismicas) {
         this.muestrasSismicas = muestrasSismicas;
+    }
+
+    /**
+     * Returns the EstacionSismologica associated with the Sismografo linked to this SerieTemporal.
+     *
+     * @return The EstacionSismologica entity, or null if no Sismografo is associated or
+     * if the Sismografo does not have an EstacionSismologica.
+     */
+    public EstacionSismologica getEstacionSismologica() {
+        if (this.sismografo != null) {
+            // Assuming Sismografo has a getter for EstacionSismologica, e.g., getEstacionSismologica()
+            return this.sismografo.getEstacionSismologica();
+        }
+        return null;
     }
 }

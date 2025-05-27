@@ -1,13 +1,13 @@
 package com.grupo7.application.dto;
 
 import java.util.List;
-import java.util.ArrayList; // Good practice to import if you might initialize lists
+import java.util.ArrayList;
 
 public class DatosRegistradosDTO {
     private String alcanceSismoNombre;
     private String clasificacionSismoNombre;
     private String origenGeneracionNombre;
-    private List<SerieTemporalDetalleDTO> seriesTemporalesConDetalles; // This will hold the hierarchical data
+    private List<SerieTemporalDetalleDTO> seriesTemporalesConDetalles;
 
     /**
      * Constructor for DatosRegistradosDTO.
@@ -72,10 +72,10 @@ public class DatosRegistradosDTO {
     @Override
     public String toString() {
         return "DatosRegistradosDTO{" +
-               "alcanceSismoNombre='" + alcanceSismoNombre + '\'' +
-               ", clasificacionSismoNombre='" + clasificacionSismoNombre + '\'' +
-               ", origenGeneracionNombre='" + origenGeneracionNombre + '\'' +
-               ", seriesTemporalesConDetalles=" + seriesTemporalesConDetalles +
-               '}';
+                "alcanceSismoNombre='" + alcanceSismoNombre + '\'' +
+                ", clasificacionSismoNombre='" + clasificacionSismoNombre + '\'' +
+                ", origenGeneracionNombre='" + origenGeneracionNombre + '\'' +
+                ", seriesTemporalesConDetalles=" + seriesTemporalesConDetalles +
+                '}';
     }
 }

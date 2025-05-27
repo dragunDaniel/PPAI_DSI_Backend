@@ -85,13 +85,13 @@ INSERT INTO evento_sismico (
   ('2025-05-02 12:01:00','2025-05-02 12:00:00',38.00,-1.10,37.50,-1.00,4.2,1,1,2,1,1);
 
 
--- --- NEW DATA STRUCTURE DEMONSTRATION ---
--- This section demonstrates the one-to-many relationships:
+--- NEW DATA STRUCTURE DEMONSTRATION ---
+
 -- EventoSismico (1) -> (Many) SerieTemporal (1) -> (Many) MuestraSismica (1) -> (Many) DetalleMuestraSismica
 
 -- SerieTemporal 1 (linked to EventoSismico ID 1)
 INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
-VALUES ('NORMAL_OPERACION', '2025-05-28 08:00:00', '2025-05-28 08:00:10', 100.0, 'SISMO-A', 1);
+VALUES ('NORMAL_OPERACION', '2025-05-28 08:00:00', '2025-05-28 08:00:10', 100.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 1);
 SET @serie_id_1 = LAST_INSERT_ID();
 
   -- MuestraSismica for SerieTemporal 1
@@ -112,7 +112,7 @@ SET @serie_id_1 = LAST_INSERT_ID();
 
 -- SerieTemporal 2 (linked to EventoSismico ID 1, demonstrating multiple series per event)
 INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
-VALUES ('ALERTA_TEMPORAL', '2025-05-28 09:00:00', '2025-05-28 09:00:10', 120.0, 'SISMO-B', 1);
+VALUES ('ALERTA_TEMPORAL', '2025-05-28 09:00:00', '2025-05-28 09:00:10', 120.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 1);
 SET @serie_id_2 = LAST_INSERT_ID();
 
   -- MuestraSismica for SerieTemporal 2
@@ -133,7 +133,7 @@ SET @serie_id_2 = LAST_INSERT_ID();
 
 -- SerieTemporal 3 (linked to EventoSismico ID 2)
 INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
-VALUES ('ALARMA_ACTIVA', '2025-05-28 10:00:00', '2025-05-28 10:00:10', 50.0, 'SISMO-C', 2);
+VALUES ('ALARMA_ACTIVA', '2025-05-28 10:00:00', '2025-05-28 10:00:10', 50.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 2);
 SET @serie_id_3 = LAST_INSERT_ID();
 
   -- MuestraSismica for SerieTemporal 3
@@ -143,6 +143,127 @@ SET @serie_id_3 = LAST_INSERT_ID();
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
       (1, 0.030, @muestra_id_s3_m1),
       (2, 0.006, @muestra_id_s3_m1);
+
+-- SerieTemporal 4 (linked to EventoSismico ID 2, using a different Sismografo/Estacion)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('NORMAL_OPERACION', '2025-05-28 10:30:00', '2025-05-28 10:30:10', 80.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 2);
+SET @serie_id_4 = LAST_INSERT_ID();
+
+  -- MuestraSismica for SerieTemporal 4
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 10:30:01', @serie_id_4);
+  SET @muestra_id_s4_m1 = LAST_INSERT_ID();
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s4_m1
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (1, 0.020, @muestra_id_s4_m1),
+      (2, 0.004, @muestra_id_s4_m1);
+
+-- SerieTemporal 5 (linked to EventoSismico ID 2, using another different Sismografo/Estacion)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('NORMAL_OPERACION', '2025-05-28 11:00:00', '2025-05-28 11:00:10', 90.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 2);
+SET @serie_id_5 = LAST_INSERT_ID();
+
+  -- MuestraSismica for SerieTemporal 5
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 11:00:01', @serie_id_5);
+  SET @muestra_id_s5_m1 = LAST_INSERT_ID();
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s5_m1
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (1, 0.018, @muestra_id_s5_m1),
+      (2, 0.0035, @muestra_id_s5_m1);
+
+-- SerieTemporal 6 (linked to EventoSismico ID 3)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('NORMAL_OPERACION', '2025-05-28 12:00:00', '2025-05-28 12:00:10', 110.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 3);
+SET @serie_id_6 = LAST_INSERT_ID();
+
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 12:00:01', @serie_id_6);
+  SET @muestra_id_s6_m1 = LAST_INSERT_ID();
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (1, 0.010, @muestra_id_s6_m1),
+      (2, 0.002, @muestra_id_s6_m1);
+
+-- SerieTemporal 7 (linked to EventoSismico ID 4)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('ALARMA_ACTIVA', '2025-05-28 13:00:00', '2025-05-28 13:00:10', 150.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 4);
+SET @serie_id_7 = LAST_INSERT_ID();
+
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 13:00:01', @serie_id_7);
+  SET @muestra_id_s7_m1 = LAST_INSERT_ID();
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (3, 0.200, @muestra_id_s7_m1),
+      (4, 0.080, @muestra_id_s7_m1);
+
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 13:00:02', @serie_id_7);
+  SET @muestra_id_s7_m2 = LAST_INSERT_ID();
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (1, 0.035, @muestra_id_s7_m2),
+      (2, 0.007, @muestra_id_s7_m2);
+
+-- SerieTemporal 8 (linked to EventoSismico ID 5)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('NORMAL_OPERACION', '2025-05-28 14:00:00', '2025-05-28 14:00:10', 95.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 5);
+SET @serie_id_8 = LAST_INSERT_ID();
+
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 14:00:01', @serie_id_8);
+  SET @muestra_id_s8_m1 = LAST_INSERT_ID();
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (1, 0.012, @muestra_id_s8_m1);
+
+-- SerieTemporal 9 (linked to EventoSismico ID 6)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('ALERTA_TEMPORAL', '2025-05-28 15:00:00', '2025-05-28 15:00:10', 115.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 6);
+SET @serie_id_9 = LAST_INSERT_ID();
+
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 15:00:01', @serie_id_9);
+  SET @muestra_id_s9_m1 = LAST_INSERT_ID();
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (2, 0.004, @muestra_id_s9_m1);
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 15:00:02', @serie_id_9);
+  SET @muestra_id_s9_m2 = LAST_INSERT_ID();
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (1, 0.022, @muestra_id_s9_m2);
+
+
+-- SerieTemporal 10 (linked to EventoSismico ID 7)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('NORMAL_OPERACION', '2025-05-28 16:00:00', '2025-05-28 16:00:10', 105.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 7);
+SET @serie_id_10 = LAST_INSERT_ID();
+
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 16:00:01', @serie_id_10);
+  SET @muestra_id_s10_m1 = LAST_INSERT_ID();
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (3, 0.100, @muestra_id_s10_m1);
+
+
+-- SerieTemporal 11 (linked to EventoSismico ID 8)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('ALARMA_ACTIVA', '2025-05-28 17:00:00', '2025-05-28 17:00:10', 130.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 8);
+SET @serie_id_11 = LAST_INSERT_ID();
+
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 17:00:01', @serie_id_11);
+  SET @muestra_id_s11_m1 = LAST_INSERT_ID();
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (1, 0.028, @muestra_id_s11_m1),
+      (4, 0.055, @muestra_id_s11_m1);
+
+-- SerieTemporal 12 (linked to EventoSismico ID 1)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('NORMAL_OPERACION', '2025-05-28 18:00:00', '2025-05-28 18:00:10', 90.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 1);
+SET @serie_id_12 = LAST_INSERT_ID();
+
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 18:00:01', @serie_id_12);
+  SET @muestra_id_s12_m1 = LAST_INSERT_ID();
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (1, 0.017, @muestra_id_s12_m1);
+
+-- SerieTemporal 13 (linked to EventoSismico ID 2)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('ALERTA_TEMPORAL', '2025-05-28 19:00:00', '2025-05-28 19:00:10', 100.0, (SELECT IDENTIFICADOR FROM sismografo ORDER BY RAND() LIMIT 1), 2);
+SET @serie_id_13 = LAST_INSERT_ID();
+
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 19:00:01', @serie_id_13);
+  SET @muestra_id_s13_m1 = LAST_INSERT_ID();
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (2, 0.003, @muestra_id_s13_m1);
 
 
 -- --- END NEW DATA STRUCTURE DEMONSTRATION ---
