@@ -11,6 +11,7 @@ import javax.annotation.processing.Generated;
 // DTOs
 import com.grupo7.application.dto.TipoDeDatoDTO;
 import com.grupo7.application.dto.EventoSismicoDTO;
+import com.grupo7.application.dto.DatosRegistradosDTO;
 
 // Gestor Service
 import com.grupo7.application.service.GestorRevisionManualService;
@@ -35,9 +36,9 @@ public class GestorRevisionManualController {
 
     // tomarEventoSismicoSeleccionado
     @PostMapping("/tomarEventoSismicoSeleccionado")
-    public ResponseEntity<Void> tomarEventoSismicoSeleccionado(@RequestBody EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
-        gestorRevisionManualService.tomarEventoSismicoSeleccionado(eventoSismicoSeleccionadoDTO);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<DatosRegistradosDTO> tomarEventoSismicoSeleccionado(@RequestBody EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
+        DatosRegistradosDTO datosRegistradosDTO = gestorRevisionManualService.tomarEventoSismicoSeleccionado(eventoSismicoSeleccionadoDTO);
+        return ResponseEntity.ok(datosRegistradosDTO);
     }
         
 }

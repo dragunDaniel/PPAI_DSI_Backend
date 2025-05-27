@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 
 // Entities
 import com.grupo7.application.entity.EventoSismico;
+import com.grupo7.application.entity.SerieTemporal;
+import com.grupo7.application.entity.DetalleMuestraSismica;
 
 // Repositories
 import com.grupo7.application.repository.EventoSismicoRepository;
@@ -18,6 +20,7 @@ import com.grupo7.application.repository.EventoSismicoRepository;
 import com.grupo7.application.dto.EventoSismicoDTO;
 import com.grupo7.application.dto.CambioEstadoDTO;
 import com.grupo7.application.dto.EstadoDTO;
+import com.grupo7.application.dto.DatosRegistradosDTO;
 
 // Mappers
 import com.grupo7.application.mapper.EventoSismicoMapper;
@@ -26,6 +29,7 @@ import com.grupo7.application.mapper.EstadoMapper;
 // Services 
 import com.grupo7.application.service.CambioEstadoService;
 import com.grupo7.application.service.EstadoService;
+import com.grupo7.application.service.SerieTemporalService;
 
 @Service
 public class EventoSismicoService {
@@ -35,15 +39,18 @@ public class EventoSismicoService {
     private final CambioEstadoService cambioEstadoService;
     private final EstadoService estadoService;
     private final EstadoMapper estadoMapper;
+    private final SerieTemporalService serieTemporalService;
 
     @Autowired
     public EventoSismicoService(EventoSismicoRepository eventoSismicoRepository, EventoSismicoMapper eventoSismicoMapper, 
-        CambioEstadoService cambioEstadoService, EstadoService estadoService, EstadoMapper estadoMapper) {
+        CambioEstadoService cambioEstadoService, EstadoService estadoService, EstadoMapper estadoMapper,
+        SerieTemporalService serieTemporalService) {
         this.eventoSismicoRepository = eventoSismicoRepository;
         this.eventoSismicoMapper = eventoSismicoMapper;
         this.cambioEstadoService = cambioEstadoService;
         this.estadoService = estadoService;
         this.estadoMapper = estadoMapper;
+        this.serieTemporalService = serieTemporalService; 
     }
 
     // Buscar todos los Autorealizados o Pendientes de Revision 
@@ -128,6 +135,34 @@ public class EventoSismicoService {
                 break;
             }
         }
+    }
+
+    // Obtener Datos Registrados
+    public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
+        
+        // Obteniendo el evento sismico entidad del evento sismico seleccionado
+        EventoSismico eventoSismicoEntidad = obtenerEntidadDesdeDTO(eventoSismicoSeleccionadoDTO);
+
+        // Obteniendo los datos registrados del evento sismico seleccionado
+        String alcanceSismoNombre = eventoSismicoEntidad.getAlcanceSismo().getNombre();
+        String clasificacionSismoNombre = eventoSismicoEntidad.getClasificacionSismo().getNombre();
+        String origenGeneracionNombre = eventoSismicoEntidad.getOrigenGeneracion().getNombre();
+
+        // Definiendo la lista de datos buscados
+        List<DetalleMuestraSismica> datosValidos = new ArrayList<>();
+
+        // Recorriendo las series temporales del evento sismico seleccionado
+        for (SerieTemporal serieTemporal : eventoSismicoEntidad.getSeriesTemporales()) {
+            
+            // Agregando los datos buscados
+            if (serieTemporalService.getDatos(serieTemporal) != null) {
+                datosValidos.addAll(serieTemporalService.getDatos(serieTemporal));
+            }
+        }
+
+        // Retornando los Dator Registrados
+        return new DatosRegistradosDTO(alcanceSismoNombre, clasificacionSismoNombre, origenGeneracionNombre, datosValidos);
+
     }
 
     public List<EventoSismico> obtenerTodosNoDTO() {

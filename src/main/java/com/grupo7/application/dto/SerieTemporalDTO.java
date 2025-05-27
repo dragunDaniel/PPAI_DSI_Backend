@@ -1,6 +1,7 @@
 package com.grupo7.application.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class SerieTemporalDTO {
 
@@ -12,9 +13,9 @@ public class SerieTemporalDTO {
     private Long muestraSismicaId;
     private String sismografoId;
     private Long eventoSismicoId;
+    private List<DetalleMuestraSismicaDTO> detalles;
 
-    public SerieTemporalDTO() {
-    }
+    public SerieTemporalDTO() {}
 
     public SerieTemporalDTO(Long id, String condicionAlarma, LocalDateTime fechaHoraInicioRegMuestreo,
                             LocalDateTime fechaHoraRegistros, Double frecuenciaMuestreo,
@@ -29,67 +30,30 @@ public class SerieTemporalDTO {
         this.eventoSismicoId = eventoSismicoId;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getCondicionAlarma() { return condicionAlarma; }
+    public void setCondicionAlarma(String condicionAlarma) { this.condicionAlarma = condicionAlarma; }
 
-    public String getCondicionAlarma() {
-        return condicionAlarma;
-    }
+    public LocalDateTime getFechaHoraInicioRegMuestreo() { return fechaHoraInicioRegMuestreo; }
+    public void setFechaHoraInicioRegMuestreo(LocalDateTime fechaHoraInicioRegMuestreo) { this.fechaHoraInicioRegMuestreo = fechaHoraInicioRegMuestreo; }
 
-    public void setCondicionAlarma(String condicionAlarma) {
-        this.condicionAlarma = condicionAlarma;
-    }
+    public LocalDateTime getFechaHoraRegistros() { return fechaHoraRegistros; }
+    public void setFechaHoraRegistros(LocalDateTime fechaHoraRegistros) { this.fechaHoraRegistros = fechaHoraRegistros; }
 
-    public LocalDateTime getFechaHoraInicioRegMuestreo() {
-        return fechaHoraInicioRegMuestreo;
-    }
+    public Double getFrecuenciaMuestreo() { return frecuenciaMuestreo; }
+    public void setFrecuenciaMuestreo(Double frecuenciaMuestreo) { this.frecuenciaMuestreo = frecuenciaMuestreo; }
 
-    public void setFechaHoraInicioRegMuestreo(LocalDateTime fechaHoraInicioRegMuestreo) {
-        this.fechaHoraInicioRegMuestreo = fechaHoraInicioRegMuestreo;
-    }
+    public Long getMuestraSismicaId() { return muestraSismicaId; }
+    public void setMuestraSismicaId(Long muestraSismicaId) { this.muestraSismicaId = muestraSismicaId; }
 
-    public LocalDateTime getFechaHoraRegistros() {
-        return fechaHoraRegistros;
-    }
+    public String getSismografoId() { return sismografoId; }
+    public void setSismografoId(String sismografoId) { this.sismografoId = sismografoId; }
 
-    public void setFechaHoraRegistros(LocalDateTime fechaHoraRegistros) {
-        this.fechaHoraRegistros = fechaHoraRegistros;
-    }
+    public Long getEventoSismicoId() { return eventoSismicoId; }
+    public void setEventoSismicoId(Long eventoSismicoId) { this.eventoSismicoId = eventoSismicoId; }
 
-    public Double getFrecuenciaMuestreo() {
-        return frecuenciaMuestreo;
-    }
-
-    public void setFrecuenciaMuestreo(Double frecuenciaMuestreo) {
-        this.frecuenciaMuestreo = frecuenciaMuestreo;
-    }
-
-    public Long getMuestraSismicaId() {
-        return muestraSismicaId;
-    }
-
-    public void setMuestraSismicaId(Long muestraSismicaId) {
-        this.muestraSismicaId = muestraSismicaId;
-    }
-
-    public String getSismografoId() {
-        return sismografoId;
-    }
-
-    public void setSismografoId(String sismografoId) {
-        this.sismografoId = sismografoId;
-    }
-
-    public Long getEventoSismicoId() {
-        return eventoSismicoId;
-    }
-
-    public void setEventoSismicoId(Long eventoSismicoId) {
-        this.eventoSismicoId = eventoSismicoId;
-    }
+    public List<DetalleMuestraSismicaDTO> getDetalles() { return detalles; }
+    public void setDetalles(List<DetalleMuestraSismicaDTO> detalles) { this.detalles = detalles; }
 }

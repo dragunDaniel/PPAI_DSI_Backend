@@ -2,6 +2,8 @@ package com.grupo7.application.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "evento_sismico")
@@ -52,6 +54,10 @@ public class EventoSismico {
     @ManyToOne
     @JoinColumn(name = "ORIGEN_GENERACION_ID")
     private OrigenDeGeneracion origenGeneracion;
+    
+    // bi-direccional hacia SerieTemporal
+    @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SerieTemporal> seriesTemporales = new ArrayList<>();
 
     // Constructor por defecto
     public EventoSismico() {
@@ -64,6 +70,15 @@ public class EventoSismico {
         this.latitudEpicentro = latitudEpicentro;
         this.longitudEpicentro = longitudEpicentro;
     }
+    
+    
+    public List<SerieTemporal> getSeriesTemporales() { return seriesTemporales; }
+
+    // método auxiliar para mantener la consistencia
+    public void agregarSerieTemporal(SerieTemporal serie) {
+        seriesTemporales.add(serie);
+        serie.setEventoSismico(this);
+        }
 
     // Getters y setters
 

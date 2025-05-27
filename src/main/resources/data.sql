@@ -29,7 +29,7 @@ INSERT INTO estado (AMBITO, NOMBRE_ESTADO) VALUES
 INSERT INTO tipo_de_dato (DENOMINACION, NOMBRE_UNIDAD_MEDIDA, VALOR_UMBRAL) VALUES
   ('Aceleración','g',0.01),
   ('Velocidad','m/s',0.001),
-  ('Desplazamiento','mm',0.1),
+  ('Longitud','mm',0.1),
   ('Frecuencia', 'Hz', 0.05);
 
 INSERT INTO estacion_sismologica (CODIGO_ESTACION, DOCUMENTO_CERT_ADQ, FECHA_SOLICITUD_CERT, LATITUD, LONGITUD, NOMBRE, NRO_CERT_ADQUISICION) VALUES
@@ -69,7 +69,19 @@ INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR) VALUES
   (4,0.060),
   (2,0.004),
   (3,0.150),
-  (4,0.045);
+  (4,0.045),
+    -- Serie para Evento 2 / SISMO-B @07:00
+  (2, 3200.0),   -- Velocidad [m/s]
+  (4,    8.0),   -- Frecuencia [Hz]
+  (3,  400.0),   -- Longitud [m] ≈ 3200/8
+  -- Serie para Evento 4 / SISMO-D @08:00
+  (2, 3500.0),
+  (4,   10.0),
+  (3,  350.0),   -- 3500/10
+  -- Serie para Evento 8 / SISMO-C @09:00
+  (2, 2500.0),
+  (4,    5.0),
+  (3,  500.0);   -- 2500/5
 
 INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_DETALLE_MUESTRA) VALUES
   ('2025-05-01 08:00:00',1),
@@ -81,7 +93,19 @@ INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_DETALLE_MUESTRA) VALUES
   ('2025-05-02 08:00:01',7),
   ('2025-05-02 08:00:02',8),
   ('2025-05-02 08:00:03',9),
-  ('2025-05-02 08:00:04',10);
+  ('2025-05-02 08:00:04',10),
+    -- Evento 2 @07:00 (3 muestras = 3 detalles)
+  ('2025-05-03 07:00:00', 11),
+  ('2025-05-03 07:00:00', 12),
+  ('2025-05-03 07:00:00', 13),
+  -- Evento 4 @08:00
+  ('2025-05-03 08:00:00', 14),
+  ('2025-05-03 08:00:00', 15),
+  ('2025-05-03 08:00:00', 16),
+  -- Evento 8 @09:00
+  ('2025-05-03 09:00:00', 17),
+  ('2025-05-03 09:00:00', 18),
+  ('2025-05-03 09:00:00', 19);
 
 INSERT INTO evento_sismico (
     FECHA_HORA_FIN,
@@ -114,7 +138,10 @@ INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FE
   ('ALARMA','2025-05-02 09:00:00','2025-05-02 09:00:10',80.0,7,'SISMO-E',5),
   ('OK','2025-05-02 10:00:00','2025-05-02 10:00:10',60.0,8,'SISMO-A',6),
   ('OK','2025-05-02 11:00:00','2025-05-02 11:00:10',90.0,9,'SISMO-B',7),
-  ('ALARMA','2025-05-02 12:00:00','2025-05-02 12:00:10',110.0,10,'SISMO-C',8);
+  ('ALARMA','2025-05-02 12:00:00','2025-05-02 12:00:10',110.0,10,'SISMO-C',8),
+  ('OK', '2025-05-03 07:00:00', '2025-05-03 07:00:10', 100.0, 11, 'SISMO-B', 2),
+  ('OK', '2025-05-03 08:00:00', '2025-05-03 08:00:10', 120.0, 14, 'SISMO-D', 4),
+  ('OK', '2025-05-03 09:00:00', '2025-05-03 09:00:10',  80.0, 17, 'SISMO-C', 8);
 
 -- Evento 1: Estado actual = Aprobado (NO pasa el filtro)
 INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id, evento_sismico_id)

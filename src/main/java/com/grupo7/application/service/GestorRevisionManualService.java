@@ -12,6 +12,7 @@ import java.util.Optional;
 import com.grupo7.application.dto.TipoDeDatoDTO;
 import com.grupo7.application.dto.EventoSismicoDTO;
 import com.grupo7.application.dto.EstadoDTO;
+import com.grupo7.application.dto.DatosRegistradosDTO;
 
 // Servicios de Entidades
 import com.grupo7.application.service.TipoDeDatoService;
@@ -58,10 +59,17 @@ public class GestorRevisionManualService {
     }
 
     // Tomar Seleccion Evento Sismico - Flujo
-    public void tomarEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
+    public DatosRegistradosDTO tomarEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
     
         // Bloquear EventoSismicoSeleccionado
         bloquearEventoSismicoSeleccionado(eventoSismicoSeleccionadoDTO);
+
+        // Buscar Datos Registrados
+        DatosRegistradosDTO datosRegistradosDTO = buscarDatosRegistrados(eventoSismicoSeleccionadoDTO);
+
+        System.out.println("DATOS REGISTTRADOS EXISTE Y ES: " + datosRegistradosDTO.toString());
+
+        return datosRegistradosDTO;
     }
 
     // Obtener hora actual del sistema
@@ -84,6 +92,13 @@ public class GestorRevisionManualService {
 
         // Bloquear es estado del evento sismico por revision
         eventoSismicoService.bloquearPorRevision(eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoBloqueadoDTO);   
+    }
+
+    public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
+        
+        DatosRegistradosDTO datosRegistradosDTO = eventoSismicoService.buscarDatosRegistrados(eventoSismicoSeleccionadoDTO);
+
+        return datosRegistradosDTO;
     }
 
 }

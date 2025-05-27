@@ -30,6 +30,11 @@ public class TipoDeDatoService {
         this.tipoDeDatoMapper = tipoDeDatoMapper;
     }
 
+    public TipoDeDatoDTO obtenerPorId(Long id) {
+        Optional<TipoDeDato> entidad = tipoDeDatoRepository.findById(id);
+        return entidad.map(tipoDeDatoMapper::toDTO).orElse(null);
+    }
+
     public List<TipoDeDatoDTO> obtenerTodosDTO() {
         List<TipoDeDato> entidades = tipoDeDatoRepository.findAll();
         return entidades.stream()

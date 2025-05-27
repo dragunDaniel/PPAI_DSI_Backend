@@ -15,7 +15,7 @@ public class EventoSismicoDTO {
     }
 
     public EventoSismicoDTO(LocalDateTime fechaHoraOcurrencia, Double latitudEpicentro, Double longitudEpicentro,
-                                  Double latitudHipocentro, Double longitudHipocentro) {
+                             Double latitudHipocentro, Double longitudHipocentro) {
         this.fechaHoraOcurrencia = fechaHoraOcurrencia;
         this.latitudEpicentro = latitudEpicentro;
         this.longitudEpicentro = longitudEpicentro;
@@ -23,7 +23,6 @@ public class EventoSismicoDTO {
         this.longitudHipocentro = longitudHipocentro;
     }
 
-    // Getters y setters
     public Long getId() {
         return id;
     }

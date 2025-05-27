@@ -28,12 +28,12 @@ public class SerieTemporal {
     @JoinColumn(name = "ID_MUESTRA_SISMICA")
     private MuestraSismica muestraSismica;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_SISMOGRAFO")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_SISMOGRAFO", nullable = false)
     private Sismografo sismografo;
-
-    @ManyToOne
-    @JoinColumn(name = "EVENTO_SISMICO_ID")
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "EVENTO_SISMICO_ID", nullable = false)
     private EventoSismico eventoSismico;
 
     // Getters y setters

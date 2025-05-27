@@ -8,8 +8,7 @@ public class MuestraSismicaDTO {
     private LocalDateTime fechaHoraMuestra;
     private Long detalleMuestraSismicaId;
 
-    public MuestraSismicaDTO() {
-    }
+    public MuestraSismicaDTO() {}
 
     public MuestraSismicaDTO(Long id, LocalDateTime fechaHoraMuestra, Long detalleMuestraSismicaId) {
         this.id = id;
@@ -17,27 +16,12 @@ public class MuestraSismicaDTO {
         this.detalleMuestraSismicaId = detalleMuestraSismicaId;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public LocalDateTime getFechaHoraMuestra() { return fechaHoraMuestra; }
+    public void setFechaHoraMuestra(LocalDateTime fechaHoraMuestra) { this.fechaHoraMuestra = fechaHoraMuestra; }
 
-    public LocalDateTime getFechaHoraMuestra() {
-        return fechaHoraMuestra;
-    }
-
-    public void setFechaHoraMuestra(LocalDateTime fechaHoraMuestra) {
-        this.fechaHoraMuestra = fechaHoraMuestra;
-    }
-
-    public Long getDetalleMuestraSismicaId() {
-        return detalleMuestraSismicaId;
-    }
-
-    public void setDetalleMuestraSismicaId(Long detalleMuestraSismicaId) {
-        this.detalleMuestraSismicaId = detalleMuestraSismicaId;
-    }
+    public Long getDetalleMuestraSismicaId() { return detalleMuestraSismicaId; }
+    public void setDetalleMuestraSismicaId(Long detalleMuestraSismicaId) { this.detalleMuestraSismicaId = detalleMuestraSismicaId; }
 }

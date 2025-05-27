@@ -19,8 +19,11 @@ public class TipoDeDatoDTO {
         this.valorUmbral = valorUmbral;
     }
 
-    // Getters y Setters
+    public boolean esTuDenominacion(String denominacion) {
+        return this.denominacion.equals(denominacion);
+    }
 
+    // Getters y Setters
     public Long getId() { // Sin Setter, PK Autoincremental
         return id;
     }
