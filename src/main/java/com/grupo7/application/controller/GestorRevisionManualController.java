@@ -11,8 +11,8 @@ import javax.annotation.processing.Generated;
 // DTOs
 import com.grupo7.application.dto.TipoDeDatoDTO;
 import com.grupo7.application.dto.EventoSismicoDTO;
+import com.grupo7.application.dto.SerieTemporalDetalleDTO;
 import com.grupo7.application.dto.DatosRegistradosDTO;
-
 // Gestor Service
 import com.grupo7.application.service.GestorRevisionManualService;
 

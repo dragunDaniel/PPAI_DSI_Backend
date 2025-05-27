@@ -59,54 +59,8 @@ INSERT INTO sismografo (IDENTIFICADOR, ID_ADQUISICION, NRO_SERIE, CODIGO_ESTACIO
   ('SISMO-D',104,'SN-D001','EST-004'),
   ('SISMO-E',105,'SN-E001','EST-005');
 
-INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR) VALUES
-  (1,0.015),
-  (1,0.020),
-  (2,0.003),
-  (3,0.120),
-  (2,0.005),
-  (1,0.025),
-  (4,0.060),
-  (2,0.004),
-  (3,0.150),
-  (4,0.045),
-    -- Serie para Evento 2 / SISMO-B @07:00
-  (2, 3200.0),   -- Velocidad [m/s]
-  (4,    8.0),   -- Frecuencia [Hz]
-  (3,  400.0),   -- Longitud [m] ≈ 3200/8
-  -- Serie para Evento 4 / SISMO-D @08:00
-  (2, 3500.0),
-  (4,   10.0),
-  (3,  350.0),   -- 3500/10
-  -- Serie para Evento 8 / SISMO-C @09:00
-  (2, 2500.0),
-  (4,    5.0),
-  (3,  500.0);   -- 2500/5
 
-INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_DETALLE_MUESTRA) VALUES
-  ('2025-05-01 08:00:00',1),
-  ('2025-05-01 08:00:01',2),
-  ('2025-05-01 08:00:02',3),
-  ('2025-05-01 08:00:03',4),
-  ('2025-05-01 08:00:04',5),
-  ('2025-05-02 08:00:00',6),
-  ('2025-05-02 08:00:01',7),
-  ('2025-05-02 08:00:02',8),
-  ('2025-05-02 08:00:03',9),
-  ('2025-05-02 08:00:04',10),
-    -- Evento 2 @07:00 (3 muestras = 3 detalles)
-  ('2025-05-03 07:00:00', 11),
-  ('2025-05-03 07:00:00', 12),
-  ('2025-05-03 07:00:00', 13),
-  -- Evento 4 @08:00
-  ('2025-05-03 08:00:00', 14),
-  ('2025-05-03 08:00:00', 15),
-  ('2025-05-03 08:00:00', 16),
-  -- Evento 8 @09:00
-  ('2025-05-03 09:00:00', 17),
-  ('2025-05-03 09:00:00', 18),
-  ('2025-05-03 09:00:00', 19);
-
+-- Insert EventoSismico records (order matters for foreign keys)
 INSERT INTO evento_sismico (
     FECHA_HORA_FIN,
     FECHA_HORA_OCURRENCIA,
@@ -130,18 +84,69 @@ INSERT INTO evento_sismico (
   ('2025-05-02 11:01:00','2025-05-02 11:00:00',41.00,2.00,40.50,1.80,3.9,3,2,3,3,3),
   ('2025-05-02 12:01:00','2025-05-02 12:00:00',38.00,-1.10,37.50,-1.00,4.2,1,1,2,1,1);
 
-INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_MUESTRA_SISMICA, ID_SISMOGRAFO, EVENTO_SISMICO_ID) VALUES
-  ('OK','2025-05-01 08:00:00','2025-05-01 08:00:10',100.0,1,'SISMO-A',1),
-  ('ALARMA','2025-05-01 09:00:00','2025-05-01 09:00:10',50.0,2,'SISMO-B',2),
-  ('OK','2025-05-01 10:00:00','2025-05-01 10:00:10',200.0,3,'SISMO-C',3),
-  ('OK','2025-05-02 08:00:00','2025-05-02 08:00:10',120.0,6,'SISMO-D',4),
-  ('ALARMA','2025-05-02 09:00:00','2025-05-02 09:00:10',80.0,7,'SISMO-E',5),
-  ('OK','2025-05-02 10:00:00','2025-05-02 10:00:10',60.0,8,'SISMO-A',6),
-  ('OK','2025-05-02 11:00:00','2025-05-02 11:00:10',90.0,9,'SISMO-B',7),
-  ('ALARMA','2025-05-02 12:00:00','2025-05-02 12:00:10',110.0,10,'SISMO-C',8),
-  ('OK', '2025-05-03 07:00:00', '2025-05-03 07:00:10', 100.0, 11, 'SISMO-B', 2),
-  ('OK', '2025-05-03 08:00:00', '2025-05-03 08:00:10', 120.0, 14, 'SISMO-D', 4),
-  ('OK', '2025-05-03 09:00:00', '2025-05-03 09:00:10',  80.0, 17, 'SISMO-C', 8);
+
+-- --- NEW DATA STRUCTURE DEMONSTRATION ---
+-- This section demonstrates the one-to-many relationships:
+-- EventoSismico (1) -> (Many) SerieTemporal (1) -> (Many) MuestraSismica (1) -> (Many) DetalleMuestraSismica
+
+-- SerieTemporal 1 (linked to EventoSismico ID 1)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('NORMAL_OPERACION', '2025-05-28 08:00:00', '2025-05-28 08:00:10', 100.0, 'SISMO-A', 1);
+SET @serie_id_1 = LAST_INSERT_ID();
+
+  -- MuestraSismica for SerieTemporal 1
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 08:00:01', @serie_id_1);
+  SET @muestra_id_s1_m1 = LAST_INSERT_ID();
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s1_m1
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (1, 0.015, @muestra_id_s1_m1),
+      (2, 0.003, @muestra_id_s1_m1);
+
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 08:00:02', @serie_id_1);
+  SET @muestra_id_s1_m2 = LAST_INSERT_ID();
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s1_m2
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (3, 0.120, @muestra_id_s1_m2),
+      (4, 0.060, @muestra_id_s1_m2);
+
+
+-- SerieTemporal 2 (linked to EventoSismico ID 1, demonstrating multiple series per event)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('ALERTA_TEMPORAL', '2025-05-28 09:00:00', '2025-05-28 09:00:10', 120.0, 'SISMO-B', 1);
+SET @serie_id_2 = LAST_INSERT_ID();
+
+  -- MuestraSismica for SerieTemporal 2
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 09:00:01', @serie_id_2);
+  SET @muestra_id_s2_m1 = LAST_INSERT_ID();
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s2_m1
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (1, 0.025, @muestra_id_s2_m1),
+      (2, 0.005, @muestra_id_s2_m1);
+
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 09:00:02', @serie_id_2);
+  SET @muestra_id_s2_m2 = LAST_INSERT_ID();
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s2_m2
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (3, 0.150, @muestra_id_s2_m2),
+      (4, 0.045, @muestra_id_s2_m2);
+
+
+-- SerieTemporal 3 (linked to EventoSismico ID 2)
+INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
+VALUES ('ALARMA_ACTIVA', '2025-05-28 10:00:00', '2025-05-28 10:00:10', 50.0, 'SISMO-C', 2);
+SET @serie_id_3 = LAST_INSERT_ID();
+
+  -- MuestraSismica for SerieTemporal 3
+  INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 10:00:01', @serie_id_3);
+  SET @muestra_id_s3_m1 = LAST_INSERT_ID();
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s3_m1
+    INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
+      (1, 0.030, @muestra_id_s3_m1),
+      (2, 0.006, @muestra_id_s3_m1);
+
+
+-- --- END NEW DATA STRUCTURE DEMONSTRATION ---
+
 
 -- Evento 1: Estado actual = Aprobado (NO pasa el filtro)
 INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id, evento_sismico_id)

@@ -1,18 +1,20 @@
 package com.grupo7.application.service;
 
-// Dependencias
+// Dependencies
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 // DTOs
 import com.grupo7.application.dto.TipoDeDatoDTO;
 import com.grupo7.application.dto.EventoSismicoDTO;
+import com.grupo7.application.dto.SerieTemporalDetalleDTO; // Se mantiene si se usa para otros fines o como parte de un DTO anidado
 import com.grupo7.application.dto.EstadoDTO;
-import com.grupo7.application.dto.DatosRegistradosDTO;
+import com.grupo7.application.dto.DatosRegistradosDTO; // Importado para el tipo de retorno
 
 // Servicios de Entidades
 import com.grupo7.application.service.TipoDeDatoService;
@@ -41,10 +43,8 @@ public class GestorRevisionManualService {
 
     // Buscar todos los eventos sismicos no revisados 
     public List<EventoSismicoDTO> buscarEventosSismicosNoRevisados() {
-
         List<EventoSismicoDTO> eventosSismicosFiltrados = eventoSismicoService.esAutoDetectadoOPendienteDeRevision();
         return eventosSismicosFiltrados;
-        
     }
 
     // Ordenar datos principales de eventos sismicos por fecha de ocurrencia
@@ -58,18 +58,23 @@ public class GestorRevisionManualService {
         return eventosSismicosFiltradosDTO;
     }
 
-    // Tomar Seleccion Evento Sismico - Flujo
+    /**
+     * Tomar la selección de un Evento Sísmico.
+     * Bloquea el evento y luego busca sus datos registrados en una estructura jerárquica.
+     * @param eventoSismicoSeleccionadoDTO El DTO del evento sísmico seleccionado.
+     * @return Un DatosRegistradosDTO con la información detallada y jerárquica.
+     */
     public DatosRegistradosDTO tomarEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
     
         // Bloquear EventoSismicoSeleccionado
         bloquearEventoSismicoSeleccionado(eventoSismicoSeleccionadoDTO);
 
-        // Buscar Datos Registrados
-        DatosRegistradosDTO datosRegistradosDTO = buscarDatosRegistrados(eventoSismicoSeleccionadoDTO);
+        // Buscar Datos Registrados (ahora retorna DatosRegistradosDTO)
+        DatosRegistradosDTO datosRegistrados = buscarDatosRegistrados(eventoSismicoSeleccionadoDTO);
 
-        System.out.println("DATOS REGISTTRADOS EXISTE Y ES: " + datosRegistradosDTO.toString());
+        System.out.println("DATOS REGISTRADOS EXISTE Y ES: " + datosRegistrados.toString());
 
-        return datosRegistradosDTO;
+        return datosRegistrados;
     }
 
     // Obtener hora actual del sistema
@@ -77,27 +82,42 @@ public class GestorRevisionManualService {
         return LocalDateTime.now();
     }    
 
-    // Bloquear Evento Sismico Seleccionado
+    /**
+     * Bloquea el estado de un evento sísmico seleccionado a "BloqueadoEnRevision".
+     * @param eventoSismicoSeleccionadoDTO El DTO del evento sísmico a bloquear.
+     */
     public void bloquearEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
         
-        EstadoDTO estadoBloqueadoDTO = new EstadoDTO();
+        EstadoDTO estadoBloqueadoDTO = null; // Initialize to null
 
-        // Obteniendo el estado bloqueado
+        // Se busca el estado "BloqueadoEnRevision"
         for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
             if (estadoDTO.sosBloqueadoEnRevision()) {
                 estadoBloqueadoDTO = estadoDTO;
                 break;
             }
         }
+        
+        if (estadoBloqueadoDTO == null) {
+            throw new RuntimeException("Estado 'BloqueadoEnRevision' no encontrado en la base de datos.");
+        }
 
-        // Bloquear es estado del evento sismico por revision
-        eventoSismicoService.bloquearPorRevision(eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoBloqueadoDTO);   
+        // Bloquear el estado del evento sismico por revision
+        eventoSismicoService.bloquearPorRevision(eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoBloqueadoDTO);    
     }
 
+    /**
+     * Busca los datos registrados para un evento sísmico, y los transforma en un DatosRegistradosDTO
+     * que contiene la información jerárquica de las series temporales y sus detalles.
+     * @param eventoSismicoSeleccionadoDTO El DTO del evento sísmico seleccionado.
+     * @return Un DatosRegistradosDTO con la información detallada y jerárquica.
+     */
     public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
-        
+        // Se llama a EventoSismicoService para obtener el DTO jerárquico completo (DatosRegistradosDTO)
         DatosRegistradosDTO datosRegistradosDTO = eventoSismicoService.buscarDatosRegistrados(eventoSismicoSeleccionadoDTO);
-
+        
+        // El DatosRegistradosDTO ya contiene la lista de SerieTemporalDetalleDTOs,
+        // así que se retorna directamente.
         return datosRegistradosDTO;
     }
 

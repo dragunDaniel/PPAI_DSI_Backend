@@ -2,6 +2,8 @@ package com.grupo7.application.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set; // Changed from List to Set
 
 @Entity
 @Table(name = "serie_temporal")
@@ -24,17 +26,19 @@ public class SerieTemporal {
     @Column(name = "FRECUENCIA_MUESTREO")
     private Double frecuenciaMuestreo;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_MUESTRA_SISMICA")
-    private MuestraSismica muestraSismica;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_SISMOGRAFO")
+    private Sismografo sismografo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_SISMOGRAFO", nullable = false)
-    private Sismografo sismografo;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EVENTO_SISMICO_ID", nullable = false)
+    @JoinColumn(name = "EVENTO_SISMICO_ID")
     private EventoSismico eventoSismico;
+
+    // One SerieTemporal has many MuestraSismica
+    @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    // Add @BatchSize for performance if you keep List/Set and don't always JOIN FETCH
+    // @org.hibernate.annotations.BatchSize(size = 20)
+    private Set<MuestraSismica> muestrasSismicas = new HashSet<>(); // Changed to Set
 
     // Getters y setters
     public Long getId() { return id; }
@@ -52,12 +56,17 @@ public class SerieTemporal {
     public Double getFrecuenciaMuestreo() { return frecuenciaMuestreo; }
     public void setFrecuenciaMuestreo(Double frecuenciaMuestreo) { this.frecuenciaMuestreo = frecuenciaMuestreo; }
 
-    public MuestraSismica getMuestraSismica() { return muestraSismica; }
-    public void setMuestraSismica(MuestraSismica muestraSismica) { this.muestraSismica = muestraSismica; }
-
     public Sismografo getSismografo() { return sismografo; }
     public void setSismografo(Sismografo sismografo) { this.sismografo = sismografo; }
 
     public EventoSismico getEventoSismico() { return eventoSismico; }
     public void setEventoSismico(EventoSismico eventoSismico) { this.eventoSismico = eventoSismico; }
+
+    public Set<MuestraSismica> getMuestrasSismicas() { // Changed getter return type
+        return muestrasSismicas;
+    }
+
+    public void setMuestrasSismicas(Set<MuestraSismica> muestrasSismicas) { // Changed setter parameter type
+        this.muestrasSismicas = muestrasSismicas;
+    }
 }

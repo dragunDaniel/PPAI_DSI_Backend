@@ -1,28 +1,27 @@
 package com.grupo7.application.dto;
 
-// Dependencies
 import java.time.LocalDateTime;
 
-// Entidades
-import com.grupo7.application.entity.CambioEstado;
-import com.grupo7.application.entity.Estado;
-import com.grupo7.application.entity.Empleado;
-import com.grupo7.application.entity.EventoSismico;
+// No entity imports here! Only DTOs.
+// import com.grupo7.application.entity.CambioEstado; // REMOVE THIS
+// import com.grupo7.application.entity.Estado;       // REMOVE THIS
+// import com.grupo7.application.entity.Empleado;     // REMOVE THIS
+// import com.grupo7.application.entity.EventoSismico; // REMOVE THIS
 
 public class CambioEstadoDTO {
 
     private Long id;
-    private Estado estado;
+    private EstadoDTO estado; // Change to EstadoDTO
     private LocalDateTime fechaHoraInicio;
     private LocalDateTime fechaHoraFin;
-    private Empleado responsable;
-    private EventoSismico eventoSismico;
+    private EmpleadoDTO responsable; // Change to EmpleadoDTO
+    private EventoSismicoDTO eventoSismico; // Change to EventoSismicoDTO
 
     public CambioEstadoDTO() {
     }
 
-    public CambioEstadoDTO(Long id, Estado estado, LocalDateTime fechaHoraInicio, LocalDateTime fechaHoraFin,
-                           Empleado responsable, EventoSismico eventoSismico) {
+    public CambioEstadoDTO(Long id, EstadoDTO estado, LocalDateTime fechaHoraInicio, LocalDateTime fechaHoraFin,
+                           EmpleadoDTO responsable, EventoSismicoDTO eventoSismico) {
         this.id = id;
         this.estado = estado;
         this.fechaHoraInicio = fechaHoraInicio;
@@ -35,6 +34,8 @@ public class CambioEstadoDTO {
         return this.fechaHoraFin == null;
     }
 
+    // --- Getters y setters (ensure they use DTO types) ---
+
     public Long getId() {
         return id;
     }
@@ -43,11 +44,11 @@ public class CambioEstadoDTO {
         this.id = id;
     }
 
-    public Estado getEstado() {
+    public EstadoDTO getEstado() { // Return EstadoDTO
         return estado;
     }
 
-    public void setEstado(Estado estado) {
+    public void setEstado(EstadoDTO estado) { // Accept EstadoDTO
         this.estado = estado;
     }
 
@@ -67,19 +68,19 @@ public class CambioEstadoDTO {
         this.fechaHoraFin = fechaHoraFin;
     }
 
-    public Empleado getResponsable() {
+    public EmpleadoDTO getResponsable() { // Return EmpleadoDTO
         return responsable;
     }
 
-    public void setResponsable(Empleado responsable) {
+    public void setResponsable(EmpleadoDTO responsable) { // Accept EmpleadoDTO
         this.responsable = responsable;
     }
 
-    public EventoSismico getEventoSismico() {
+    public EventoSismicoDTO getEventoSismico() { // Return EventoSismicoDTO
         return eventoSismico;
     }
 
-    public void setEventoSismico(EventoSismico eventoSismico) {
+    public void setEventoSismico(EventoSismicoDTO eventoSismico) { // Accept EventoSismicoDTO
         this.eventoSismico = eventoSismico;
     }
 }
