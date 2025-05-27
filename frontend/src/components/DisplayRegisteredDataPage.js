@@ -10,7 +10,6 @@ function DisplayRegisteredDataPage({
   registeredData,
   confirmSuccess,
   confirmError,
-  onGoBackToManualRevision,
   onGoBack,
 }) {
   return (
@@ -228,11 +227,11 @@ function DisplayRegisteredDataPage({
           gap: "10px",
         }}
       >
-        <button onClick={onGoBackToManualRevision} style={purpleButtonStyle}>
-          Volver a Selección Manual
+        <button style={purpleButtonStyle}>
+          Visualizar en un mapa evento sismico y estaciones involucradas
         </button>
         <button onClick={onGoBack} style={secondaryButtonStyle}>
-          Volver al Inicio
+          No visualizar
         </button>
       </div>
     </div>
