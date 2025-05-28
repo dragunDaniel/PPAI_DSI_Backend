@@ -219,6 +219,20 @@ function DisplayRegisteredDataPage({
         )
       )}
 
+      <div style={{ marginTop: "30px", textAlign: "center" }}>
+        <img
+          src="/sismogram.jpg"
+          alt="Sismograma"
+          style={{
+            width: "500px",
+            maxWidth: "90%",
+            height: "auto",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+          }}
+        />
+      </div>
       <div
         style={{
           marginTop: "30px",
