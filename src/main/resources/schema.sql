@@ -119,3 +119,12 @@ CREATE TABLE IF NOT EXISTS cambio_estado (
   RESPONSABLE_ID BIGINT REFERENCES EMPLEADO(ID),
   EVENTO_SISMICO_ID INTEGER REFERENCES EVENTO_SISMICO(ID)
 );
+
+-- Usuario Logueado
+CREATE TABLE usuario (
+    id_usuario BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre_usuario VARCHAR(50) NOT NULL,
+    contraseña VARCHAR(255) NOT NULL,
+    empleado_id BIGINT,
+    FOREIGN KEY (empleado_id) REFERENCES empleado(id)
+);

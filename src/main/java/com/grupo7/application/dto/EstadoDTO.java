@@ -43,6 +43,10 @@ public class EstadoDTO {
         return this.nombreEstado.equals("RevisionCancelada");
     }
 
+    public boolean sosRechazado() {
+        return this.nombreEstado.equals("Rechazado");
+    }
+
     // Getters y setters
     public Long getId() {
         return id;

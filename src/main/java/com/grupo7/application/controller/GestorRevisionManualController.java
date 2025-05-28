@@ -40,5 +40,18 @@ public class GestorRevisionManualController {
         DatosRegistradosDTO datosRegistradosDTO = gestorRevisionManualService.tomarEventoSismicoSeleccionado(eventoSismicoSeleccionadoDTO);
         return ResponseEntity.ok(datosRegistradosDTO);
     }
-        
+
+    // tomarNoVisualizacion
+    @GetMapping("/tomarNoVisualizacion")
+    public ResponseEntity tomarNoVisualizacion() {
+        return ResponseEntity.ok().build();
+    }
+
+    // tomarRechazoModificacion
+    @GetMapping("/tomarRechazoModificacion")
+    public ResponseEntity<Boolean> tomarRechazoModificacion() {
+        boolean resultado = gestorRevisionManualService.tomarRechazoModificacion();
+        return ResponseEntity.ok(resultado);
+    }
+    
 }

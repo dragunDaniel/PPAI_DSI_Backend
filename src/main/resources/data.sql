@@ -300,3 +300,8 @@ VALUES (6, '2025-05-02 11:00:00', NULL, 3, 7);
 -- Evento 8: Estado actual = AutoDetectado (SÍ pasa el filtro)
 INSERT INTO cambio_estado (estado_id, fecha_hora_inicio, fecha_hora_fin, responsable_id, evento_sismico_id)
 VALUES (1, '2025-05-02 12:00:00', NULL, 4, 8);
+
+-- Usuario Logueado (AS)
+-- Asumiendo que ya existe un empleado con id = 1
+INSERT INTO usuario (nombre_usuario, contraseña, empleado_id)
+VALUES ('juanPerez', 'password123', 1);
