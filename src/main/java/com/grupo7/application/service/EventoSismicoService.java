@@ -24,6 +24,7 @@ import com.grupo7.application.repository.EventoSismicoRepository;
 
 // DTOs
 import com.grupo7.application.dto.EventoSismicoDTO;
+import com.grupo7.application.dto.EventoSismicoBuscadoDTO;
 import com.grupo7.application.dto.CambioEstadoDTO;
 import com.grupo7.application.dto.EstadoDTO;
 import com.grupo7.application.dto.SerieTemporalDetalleDTO;
@@ -37,6 +38,7 @@ import com.grupo7.application.dto.EmpleadoDTO;
 
 // Mappers
 import com.grupo7.application.mapper.EventoSismicoMapper;
+import com.grupo7.application.mapper.EventoSismicoBuscadoMapper;
 import com.grupo7.application.mapper.EstadoMapper;
 import com.grupo7.application.mapper.SerieTemporalMapper;
 import com.grupo7.application.mapper.MuestraSismicaMapper;
@@ -53,6 +55,7 @@ public class EventoSismicoService {
 
     private final EventoSismicoRepository eventoSismicoRepository;
     private final EventoSismicoMapper eventoSismicoMapper;
+    private final EventoSismicoBuscadoMapper eventoSismicoBuscadoMapper;
     private final CambioEstadoService cambioEstadoService;
     private final EstadoService estadoService;
     private final EstadoMapper estadoMapper;
@@ -67,9 +70,10 @@ public class EventoSismicoService {
                                 CambioEstadoService cambioEstadoService, EstadoService estadoService, EstadoMapper estadoMapper,
                                 SerieTemporalService serieTemporalService, SerieTemporalMapper serieTemporalMapper,
                                 DetalleMuestraSismicaMapper detalleMuestraSismicaMapper, SismografoMapper sismografoMapper,
-                                MuestraSismicaMapper muestraSismicaMapper) {
+                                MuestraSismicaMapper muestraSismicaMapper, EventoSismicoBuscadoMapper eventoSismicoBuscadoMapper) {
         this.eventoSismicoRepository = eventoSismicoRepository;
         this.eventoSismicoMapper = eventoSismicoMapper;
+        this.EventoSismicoBuscadoMapper = eventoSismicoBuscadoMapper;
         this.cambioEstadoService = cambioEstadoService;
         this.estadoService = estadoService;
         this.estadoMapper = estadoMapper;
@@ -80,10 +84,10 @@ public class EventoSismicoService {
         this.muestraSismicaMapper = muestraSismicaMapper;
     }
 
-    public List<EventoSismicoDTO> esAutoDetectadoOPendienteDeRevision() {
+    public List<EventoSismicoBuscadoDTO> esAutoDetectadoOPendienteDeRevision() {
         
         // Lista de Eventos Sismicos Filtrados
-        List<EventoSismicoDTO> eventosSismicosFiltradosDTO = new ArrayList<>();
+        List<EventoSismicoBuscadoDTO> eventosSismicosFiltradosDTO = new ArrayList<>();
 
         // Mientras haya eventos sismicos
         for (EventoSismico eventoSismico : obtenerTodosNoDTO()) {
@@ -110,12 +114,13 @@ public class EventoSismicoService {
         return eventosSismicosFiltradosDTO;
     } 
 
-    @Transactional(readOnly = true)
-    public EventoSismico obtenerEntidadDesdeDTO(EventoSismicoDTO dto) {
-        return eventoSismicoRepository.findByIdWithDetails(dto.getId())
-            .orElseThrow(() -> new RuntimeException("EventoSismico no encontrado con id: " + dto.getId()));
+    // Obtener datos principales de los eventos sismicos
+    public List<EventoSismicoDTO> obtenerDatosPrincipales(List<EventoSismicoBuscadoDTO> buscados) {
+        return buscados.stream()
+            .map(eventoSismicoBuscadoMapper::toBasicDTO)  // suponiendo que tu método se llame toBasicDTO
+            .collect(Collectors.toList());
     }
-
+    
     public void bloquearPorRevision(EventoSismicoDTO eventoSismicoSeleccionadoDTO, LocalDateTime fechaHoraActual, EstadoDTO estadoBloqueadoDTO) {
 
         for (CambioEstadoDTO cambioEstadoDTO : cambioEstadoService.obtenerTodosDTO()) {
@@ -304,5 +309,11 @@ public class EventoSismicoService {
                 break;
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public EventoSismico obtenerEntidadDesdeDTO(EventoSismicoDTO dto) {
+        return eventoSismicoRepository.findByIdWithDetails(dto.getId())
+            .orElseThrow(() -> new RuntimeException("EventoSismico no encontrado con id: " + dto.getId()));
     }
 }

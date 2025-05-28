@@ -16,6 +16,7 @@ import com.grupo7.application.entity.EventoSismico;
 // DTOs
 import com.grupo7.application.dto.TipoDeDatoDTO;
 import com.grupo7.application.dto.EventoSismicoDTO;
+import com.grupo7.application.dto.EventoSismicoBuscadoDTO;
 import com.grupo7.application.dto.SerieTemporalDetalleDTO; // Se mantiene si se usa para otros fines o como parte de un DTO anidado
 import com.grupo7.application.dto.EstadoDTO;
 import com.grupo7.application.dto.DatosRegistradosDTO; // Importado para el tipo de retorno
@@ -61,12 +62,24 @@ public class GestorRevisionManualService {
 
     // Registrar Revisión Manual - Flujo
     public List<EventoSismicoDTO> registrarRevisionManual() {
-        return buscarEventosSismicosNoRevisados();
+    
+        
+        // Filtrar Eventos Sismicos No Revisados
+        List<EventoSismicoBuscadoDTO> eventosSismicosFiltrados = buscarEventosSismicosNoRevisados();
+
+        // Obtener datos principales
+        List<EventoSismicoDTO> datosPrincipales = eventoSismicoService.obtenerDatosPrincipales(eventosSismicosFiltrados);
+
+        return datosPrincipales;
+    
     }
 
     // Buscar todos los eventos sismicos no revisados 
-    public List<EventoSismicoDTO> buscarEventosSismicosNoRevisados() {
-        List<EventoSismicoDTO> eventosSismicosFiltrados = eventoSismicoService.esAutoDetectadoOPendienteDeRevision();
+    public List<EventoSismicoBuscadoDTO> buscarEventosSismicosNoRevisados() {
+
+        // Obtener los evento sismicos filtrados
+        List<EventoSismicoBuscadoDTO> eventosSismicosFiltrados = eventoSismicoService.esAutoDetectadoOPendienteDeRevision(); 
+
         return eventosSismicosFiltrados;
     }
 
