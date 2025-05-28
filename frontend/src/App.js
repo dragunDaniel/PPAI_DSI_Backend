@@ -242,7 +242,7 @@ function App() {
     // Acción para confirmar evento
   };
   const handleOptionReject = () => {
-    // Acción para rechazar evento
+    setCurrentPage("home");
   };
   const handleOptionExpert = () => {
     // Acción para solicitar revisión a experto
