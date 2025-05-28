@@ -150,16 +150,32 @@ public class GestorRevisionManualService {
         }
     }
 
-    // 
+    // RECHAZO DE EVENTO SISMICO SELECCIONADO
     public boolean rechazarEventoSismicoSeleccionado() {
         
-        // Validar Datos Registrados para el Evento Sismico Seleccionado
         if (validarDatosSismicos() == false) {
             return false;
         }
 
         // Actualizar el estado del evento sismico seleccionado a rechazado
         rechazarEventoSismico();
+
+        
+        // llamar a fin de caso de uso
+        return finCU();
+
+    }
+
+    
+    // CONFIRMACIÓN DE EVENTO SISMICO SELECCIONADO
+    public boolean confirmarEventoSismicoSeleccionado() {
+        
+        if (validarDatosSismicos() == false) {
+            return false;
+        }
+
+        // Actualizar el estado del evento sismico seleccionado a rechazado
+        confirmarEventoSismico();
 
         
         // llamar a fin de caso de uso
@@ -187,6 +203,38 @@ public class GestorRevisionManualService {
         return true; 
 
     }
+
+    
+    public void confirmarEventoSismico() {
+        
+        EstadoDTO estadoConfirmadoDTO = null; // Initialize to null
+
+        // Se busca el estado "Rechazado"
+        for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
+            if (estadoDTO.sosConfirmado()) {
+                estadoConfirmadoDTO = estadoDTO;
+                break;
+            }
+        }
+
+        // Revisando que efectivamente el estado rechazado haya sido encontrado en la base de datos
+        if (estadoConfirmadoDTO == null) {
+            throw new RuntimeException("Estado 'Rechazado' no encontrado en la base de datos.");
+        }
+
+        // Obteniendo al usaurio logueado con id 1
+        UsuarioDTO usuarioLogueadoDTO = usuarioService.obtenerUsuarioDTO(1L);
+
+        // Obteniendo al responsable de inspeccion (empleado logueado como usuario responsable de este cambio de esatdo)
+        EmpleadoDTO responsableDeInspeccionDTO = usuarioService.obtenerEmpleado(usuarioLogueadoDTO.getIdUsuario());
+
+        System.out.println("d");
+
+        // Rechazar el evento sismico seleccionado 
+        eventoSismicoService.rechazar(this.eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoRechazadoDTO, responsableDeInspeccionDTO);
+
+    }
+
 
     public void rechazarEventoSismico() {
         

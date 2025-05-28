@@ -150,14 +150,7 @@ public class EventoSismicoService {
             }
         }
     }
-
-    /**
-     * Busca los datos registrados para un evento sísmico seleccionado, mapeando todas las entidades
-     * relacionadas a sus respectivos DTOs para evitar problemas de serialización.
-     * Ahora construye un DTO jerárquico.
-     * @param eventoSismicoSeleccionadoDTO El DTO del evento sísmico seleccionado.
-     * @return Un DatosRegistradosDTO con la información detallada y jerárquica.
-     */
+    
     @Transactional(readOnly = true)
     public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
         

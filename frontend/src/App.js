@@ -250,6 +250,7 @@ function App() {
     setCurrentPage("optionSelection");
   };
 
+  // BOTON DE CONFIRMAR EVENTO SISMICO
   const handleOptionConfirm = async () => {
     if (!selectedEvent || selectedEvent.id === undefined || selectedEvent.id === null) {
       setOptionActionError("No hay evento sísmico seleccionado para aceptar.");
@@ -260,33 +261,39 @@ function App() {
     setOptionActionError(null);
     setOptionActionSuccess(null);
     try {
-      const response = await fetch("http://localhost:8080/api/gestor-revision-manual/tomarRechazoModificacion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ eventoSismicoId: selectedEvent.id, accion: "aceptar" })
+      const url = "http://localhost:8080/api/gestor-revision-manual/confirmarEventoSismicoSeleccionado";
+
+      const response = await fetch(url, {
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json"
+          }
       });
+
       const text = await response.text();
       if (!response.ok) {
-        throw new Error(text);
+          throw new Error(text || "Error en la respuesta del servidor.");
       }
-      setOptionActionSuccess("Evento sísmico aceptado correctamente.");
+
+      setOptionActionSuccess("Evento sísmico confirmado correctamente.");
       setOptionActionError(null);
-      // Optionally, navigate to home or another page after a short delay
+
       setTimeout(() => {
-        setCurrentPage("home");
-        setSelectedEvent(null);
-        setOptionActionSuccess(null);
-      }, 1500);
-    } catch (error) {
-      setOptionActionError(error.message || "Error al aceptar el evento.");
+          setCurrentPage("home");
+          setSelectedEvent(null);
+          setOptionActionSuccess(null);
+      }, 1000);
+  } catch (error) {
+      console.error("Error al confirmar el evento:", error);
+      setOptionActionError(error.message || "Error al confirmar el evento.");
       setOptionActionSuccess(null);
-    } finally {
+  } finally {
       setOptionActionLoading(false);
-    }
-  };const handleOptionReject = async () => {
-    // Initial validation: Ensure an event is selected on the frontend
-    // (even if the backend endpoint doesn't directly use the ID for this specific call,
-    // it's good practice for the UI to reflect a selection).
+  }
+  };
+  
+  //BOTON DE RECHAZAR EVENTO SISMICO
+  const handleOptionReject = async () => {
     if (!selectedEvent || selectedEvent.id === undefined || selectedEvent.id === null) {
         setOptionActionError("No hay evento sísmico seleccionado para rechazar.");
         setOptionActionSuccess(null);
@@ -298,44 +305,34 @@ function App() {
     setOptionActionSuccess(null);
 
     try {
-        // Construct the URL for the new GET endpoint
         const url = "http://localhost:8080/api/gestor-revision-manual/rechazarEventoSismicoSeleccionado";
 
         const response = await fetch(url, {
-            method: "GET", // Changed to GET to match the backend endpoint
+            method: "GET",
             headers: {
-                // Content-Type header is less critical for GET requests without a body,
-                // but keeping it is generally harmless.
                 "Content-Type": "application/json"
             }
-            // Removed 'body' property as GET requests typically do not have a body
         });
 
-        const text = await response.text(); // Get response as text to handle potential non-JSON errors
+        const text = await response.text();
         if (!response.ok) {
-            // If the response status is not in the 2xx range, throw an error
             throw new Error(text || "Error en la respuesta del servidor.");
         }
-
-        // Assuming the backend returns a boolean or some confirmation,
-        // you might parse it if needed. The backend returns a boolean.
-        // const isRejected = JSON.parse(text); // If the backend returns "true" or "false" as a string
-
+        
         setOptionActionSuccess("Evento sísmico rechazado correctamente.");
         setOptionActionError(null);
 
-        // Timer to clear messages and navigate
         setTimeout(() => {
             setCurrentPage("home");
-            setSelectedEvent(null); // Clear the selected event on the frontend
+            setSelectedEvent(null);
             setOptionActionSuccess(null);
-        }, 1500); // 1.5 seconds delay
+        }, 1000);
     } catch (error) {
-        console.error("Error al rechazar el evento:", error); // Log the actual error for debugging
+        console.error("Error al rechazar el evento:", error);
         setOptionActionError(error.message || "Error al rechazar el evento.");
         setOptionActionSuccess(null);
     } finally {
-        setOptionActionLoading(false); // Ensure loading state is reset regardless of success or failure
+        setOptionActionLoading(false);
     }
 };
 
