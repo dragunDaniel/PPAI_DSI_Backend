@@ -69,6 +69,9 @@ public class EventoSismico {
         this.fechaHoraOcurrencia = fechaHoraOcurrencia;
         this.latitudEpicentro = latitudEpicentro;
         this.longitudEpicentro = longitudEpicentro;
+        this.latitudHipocentro = latitudHipocentro;
+        this.longitudHipocentro = longitudHipocentro;
+        this.valorMagnitud = valorMagnitud;
     }
     
     
