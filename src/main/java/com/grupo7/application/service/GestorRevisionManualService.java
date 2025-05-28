@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Comparator;
 
 // DTOs
 import com.grupo7.application.dto.TipoDeDatoDTO;
@@ -21,6 +22,9 @@ import com.grupo7.application.service.TipoDeDatoService;
 import com.grupo7.application.service.EventoSismicoService;
 import com.grupo7.application.service.EstadoService;
 
+// Otros Gestores
+import com.grupo7.application.service.GestorGenerarSismogramaService;
+
 @Service
 public class GestorRevisionManualService {
 
@@ -28,12 +32,14 @@ public class GestorRevisionManualService {
     private final TipoDeDatoService tipoDeDatoService;
     private final EventoSismicoService eventoSismicoService;
     private final EstadoService estadoService;
+    private final GestorGenerarSismogramaService gestorGenerarSismogramaService;
 
     @Autowired
-    public GestorRevisionManualService (TipoDeDatoService tipoDeDatoService, EventoSismicoService eventoSismicoService, EstadoService estadoService) {
+    public GestorRevisionManualService (TipoDeDatoService tipoDeDatoService, EventoSismicoService eventoSismicoService, EstadoService estadoService, GestorGenerarSismogramaService gestorGenerarSismogramaService) {
         this.tipoDeDatoService = tipoDeDatoService;
         this.eventoSismicoService = eventoSismicoService;
         this.estadoService = estadoService;
+        this.gestorGenerarSismogramaService = gestorGenerarSismogramaService;
     }
 
     // Registrar Revisión Manual - Flujo
@@ -72,8 +78,15 @@ public class GestorRevisionManualService {
         // Buscar Datos Registrados (ahora retorna DatosRegistradosDTO)
         DatosRegistradosDTO datosRegistrados = buscarDatosRegistrados(eventoSismicoSeleccionadoDTO);
 
-        System.out.println("DATOS REGISTRADOS EXISTE Y ES: " + datosRegistrados.toString());
+        // Categorizas datos registrados por estación sismica 
+        List<SerieTemporalDetalleDTO> seriesTemporalesDetallesDTOs = datosRegistrados.getSeriesTemporalesConDetalles();
+        ordenarSeriesTemporalesPorCodigoEstacion(seriesTemporalesDetallesDTOs);
+        datosRegistrados.setSeriesTemporalesConDetalles(seriesTemporalesDetallesDTOs);
 
+        // Llamar al caso de uso Generar Sismograma
+        gestorGenerarSismogramaService.generarSismograma();
+
+        // Devolver los datos registrados para el sismografo seleccionado
         return datosRegistrados;
     }
 
@@ -119,6 +132,17 @@ public class GestorRevisionManualService {
         // El DatosRegistradosDTO ya contiene la lista de SerieTemporalDetalleDTOs,
         // así que se retorna directamente.
         return datosRegistradosDTO;
+    }
+
+    /**
+     * Orders a list of SerieTemporalDetalleDTO by the 'codigoEstacion' field.
+     * @param seriesTemporalesDetalleDTOs The list to be sorted.
+     */
+    private void ordenarSeriesTemporalesPorCodigoEstacion(List<SerieTemporalDetalleDTO> seriesTemporalesDetalleDTOs) {
+        if (seriesTemporalesDetalleDTOs != null) {
+            seriesTemporalesDetalleDTOs.sort(Comparator.comparing(SerieTemporalDetalleDTO::getCodigoEstacion,
+                                                      Comparator.nullsLast(String::compareTo)));
+        }
     }
 
 }

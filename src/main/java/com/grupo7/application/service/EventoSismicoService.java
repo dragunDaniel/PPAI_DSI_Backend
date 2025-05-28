@@ -159,6 +159,7 @@ public class EventoSismicoService {
      */
     @Transactional(readOnly = true)
     public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
+        
         // 1. Obtener el evento sismico entidad con todas sus relaciones cargadas (JOIN FETCH)
         EventoSismico eventoSismicoEntidad = obtenerEntidadDesdeDTO(eventoSismicoSeleccionadoDTO);
 
@@ -209,21 +210,7 @@ public class EventoSismicoService {
             }
         }
 
-        // Sort the list of SerieTemporalDetalleDTOs by codigoEstacion
-        ordenarSeriesTemporalesPorCodigoEstacion(seriesTemporalesDetallesDTOs);
-
         return new DatosRegistradosDTO(alcanceSismoNombre, clasificacionSismoNombre, origenGeneracionNombre, seriesTemporalesDetallesDTOs);
-    }
-
-    /**
-     * Orders a list of SerieTemporalDetalleDTO by the 'codigoEstacion' field.
-     * @param seriesTemporalesDetalleDTOs The list to be sorted.
-     */
-    private void ordenarSeriesTemporalesPorCodigoEstacion(List<SerieTemporalDetalleDTO> seriesTemporalesDetalleDTOs) {
-        if (seriesTemporalesDetalleDTOs != null) {
-            seriesTemporalesDetalleDTOs.sort(Comparator.comparing(SerieTemporalDetalleDTO::getCodigoEstacion,
-                                                      Comparator.nullsLast(String::compareTo)));
-        }
     }
 
     // Métodos CRUD básicos:
