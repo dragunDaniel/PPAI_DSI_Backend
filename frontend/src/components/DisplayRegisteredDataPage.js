@@ -11,6 +11,7 @@ function DisplayRegisteredDataPage({
   confirmSuccess,
   confirmError,
   onGoBack,
+  onNoDataEdit,
 }) {
   return (
     <div style={{ padding: "20px 0" }}>
@@ -244,7 +245,7 @@ function DisplayRegisteredDataPage({
         <button style={purpleButtonStyle}>
           Visualizar en un mapa evento sismico y estaciones involucradas
         </button>
-        <button onClick={onGoBack} style={secondaryButtonStyle}>
+        <button onClick={onNoDataEdit} style={secondaryButtonStyle}>
           No visualizar
         </button>
       </div>

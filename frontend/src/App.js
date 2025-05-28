@@ -3,6 +3,7 @@ import HomePage from "./components/HomePage";
 import ManualRevisionPage from "./components/ManualRevisionPage";
 import DisplayRegisteredDataPage from "./components/DisplayRegisteredDataPage";
 import DeveloperOptionsPage from "./components/DeveloperOptionsPage";
+import DataModificationPage from "./components/DataModificationPage";
 import {
   purpleButtonStyle,
   secondaryButtonStyle,
@@ -225,6 +226,17 @@ function App() {
     }
   };
 
+  const handleGoToDataModification = () => {
+    setCurrentPage("dataModification");
+  };
+
+  const handleModifyData = () => {
+  };
+
+  const handleCancelModifyData = () => {
+    setCurrentPage("manualRevision"); // O la página que corresponda
+  };
+
   return (
     <div
       style={{
@@ -267,7 +279,14 @@ function App() {
           confirmSuccess={confirmSuccess}
           confirmError={confirmError}
           onGoBackToManualRevision={handleGoBackToManualRevision}
-          onGoBack={handleGoBack}
+          onNoDataEdit={handleGoToDataModification}
+        />
+      )}
+
+      {currentPage === "dataModification" && (
+        <DataModificationPage
+          onModify={handleModifyData}
+          onCancel={handleCancelModifyData}
         />
       )}
 
