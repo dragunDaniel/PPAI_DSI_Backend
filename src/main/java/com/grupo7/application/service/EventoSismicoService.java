@@ -73,7 +73,7 @@ public class EventoSismicoService {
                                 MuestraSismicaMapper muestraSismicaMapper, EventoSismicoBuscadoMapper eventoSismicoBuscadoMapper) {
         this.eventoSismicoRepository = eventoSismicoRepository;
         this.eventoSismicoMapper = eventoSismicoMapper;
-        this.EventoSismicoBuscadoMapper = eventoSismicoBuscadoMapper;
+        this.eventoSismicoBuscadoMapper = eventoSismicoBuscadoMapper;
         this.cambioEstadoService = cambioEstadoService;
         this.estadoService = estadoService;
         this.estadoMapper = estadoMapper;
@@ -105,7 +105,8 @@ public class EventoSismicoService {
             (cambioEstadoService.sosPendienteDeRevision(cambioEstadoActual.getEstado().getId()))) {
                 
                 // Agregando el evento sismico a la lista de eventos sismicos filtrados
-                eventosSismicosFiltradosDTO.add(eventoSismicoMapper.toDTO(eventoSismico));
+                eventosSismicosFiltradosDTO.add(eventoSismicoBuscadoMapper.toBuscadoDTO(eventoSismico));
+
 
             } 
         }
@@ -117,9 +118,10 @@ public class EventoSismicoService {
     // Obtener datos principales de los eventos sismicos
     public List<EventoSismicoDTO> obtenerDatosPrincipales(List<EventoSismicoBuscadoDTO> buscados) {
         return buscados.stream()
-            .map(eventoSismicoBuscadoMapper::toBasicDTO)  // suponiendo que tu método se llame toBasicDTO
-            .collect(Collectors.toList());
+                       .map(eventoSismicoBuscadoMapper::toBasicDTO)  // convierte cada BuscadoDTO a simple DTO
+                       .collect(Collectors.toList());
     }
+    
     
     public void bloquearPorRevision(EventoSismicoDTO eventoSismicoSeleccionadoDTO, LocalDateTime fechaHoraActual, EstadoDTO estadoBloqueadoDTO) {
 
@@ -300,6 +302,50 @@ public class EventoSismicoService {
 
                 // Asignando el puntero del estado Rechazado al nuevo cambio de estado creado
                 cambioEstadoRechazado.setEstado(estadoRechazadoDTO);
+
+                System.out.println("Estado persistido asignado al cambio de estado: " + cambioEstadoRechazado.getEstado().getId());
+
+                // Creando el CambioDeEstado a partir del DTO
+                cambioEstadoService.crearDesdeDTO(cambioEstadoRechazado);
+
+                break;
+            }
+        }
+    }
+
+    public void confirmar(EventoSismicoDTO eventoSismicoSeleccionadoDTO, LocalDateTime fechaHoraActual, EstadoDTO estadoConfirmadoDTO, EmpleadoDTO responsableDeInspeccionDTO) {
+
+        for (CambioEstadoDTO cambioEstadoDTO : cambioEstadoService.obtenerTodosDTO()) {
+
+            if (cambioEstadoDTO.getEventoSismico() != null &&
+                cambioEstadoDTO.getEventoSismico().getId().equals(eventoSismicoSeleccionadoDTO.getId()) &&
+                cambioEstadoDTO.esEstadoActual()) {
+
+                // Seteando el null al cambio de estado actual del evento sismico seleccionado
+                cambioEstadoDTO.setFechaHoraFin(fechaHoraActual);
+
+                // Persistiendo los cambios
+                CambioEstadoDTO cambioEstadoGuardado = cambioEstadoService.actualizarDesdeDTO(cambioEstadoDTO.getId(), cambioEstadoDTO);
+                System.out.println("El cambio de estado guardado es: " + cambioEstadoGuardado);
+
+                // Creando un nuevo objeto cambio de estado que apunta al estado Rechazado
+                CambioEstadoDTO cambioEstadoRechazado = new CambioEstadoDTO();
+                cambioEstadoRechazado.setFechaHoraInicio(fechaHoraActual);
+                cambioEstadoRechazado.setEventoSismico(eventoSismicoSeleccionadoDTO);
+
+                // Asignando al responsable de inspeccion
+                cambioEstadoRechazado.setResponsable(responsableDeInspeccionDTO);
+
+                Long estadoId = estadoConfirmadoDTO.getId();
+                System.out.println(" -----__---------> EL ID DEL ESATDO ES: ---> " + estadoId);
+
+                // Verificando que el estado existe y tiene un id asignado 
+                if (estadoId == null) {
+                    throw new RuntimeException("El DTO de Estado no contiene un ID válido.");
+                }
+
+                // Asignando el puntero del estado Rechazado al nuevo cambio de estado creado
+                cambioEstadoRechazado.setEstado(estadoConfirmadoDTO);
 
                 System.out.println("Estado persistido asignado al cambio de estado: " + cambioEstadoRechazado.getEstado().getId());
 

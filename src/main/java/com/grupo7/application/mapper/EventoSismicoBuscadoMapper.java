@@ -5,6 +5,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+// Entidades
+import com.grupo7.application.entity.EventoSismico;
+
 // DTOs
 import com.grupo7.application.dto.EventoSismicoBuscadoDTO;
 import com.grupo7.application.dto.EventoSismicoDTO;
@@ -25,4 +28,6 @@ public interface EventoSismicoBuscadoMapper {
     @Mapping(target = "latitudHipocentro", source = "latitudHipocentro")
     @Mapping(target = "longitudHipocentro", source = "longitudHipocentro")
     EventoSismicoDTO toBasicDTO(EventoSismicoBuscadoDTO buscadoDTO);
+    EventoSismicoBuscadoDTO toBuscadoDTO(EventoSismico entidad);
 }
+

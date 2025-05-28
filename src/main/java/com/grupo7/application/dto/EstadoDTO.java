@@ -47,6 +47,10 @@ public class EstadoDTO {
         return this.nombreEstado.equals("Rechazado");
     }
 
+    public boolean sosConfirmado() {
+        return this.nombreEstado.equals("Confirmado");
+    }
+
     // Getters y setters
     public Long getId() {
         return id;

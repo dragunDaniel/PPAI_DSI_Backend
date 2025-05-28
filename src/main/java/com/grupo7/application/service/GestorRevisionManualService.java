@@ -64,11 +64,14 @@ public class GestorRevisionManualService {
     public List<EventoSismicoDTO> registrarRevisionManual() {
     
         
-        // Filtrar Eventos Sismicos No Revisados
+        // Filtrar Eventos Sismicos No Revisados Desordenados por Fecha y Hora de Ocurrencia
         List<EventoSismicoBuscadoDTO> eventosSismicosFiltrados = buscarEventosSismicosNoRevisados();
 
         // Obtener datos principales
         List<EventoSismicoDTO> datosPrincipales = eventoSismicoService.obtenerDatosPrincipales(eventosSismicosFiltrados);
+
+        // Ordenar dator principales por fecha y hora de ocurrencia
+        datosPrincipales = ordenarPorFechaDeOcurrencia(datosPrincipales);
 
         return datosPrincipales;
     
@@ -84,14 +87,15 @@ public class GestorRevisionManualService {
     }
 
     // Ordenar datos principales de eventos sismicos por fecha de ocurrencia
-    public List<EventoSismicoDTO> ordenarPorFechaDeOcurrencia() {
-        List<EventoSismicoDTO> eventosSismicosFiltradosDTO = buscarEventosSismicosNoRevisados();
+    public List<EventoSismicoDTO> ordenarPorFechaDeOcurrencia(List<EventoSismicoDTO> datosPrincipalesDTO) {
     
-        eventosSismicosFiltradosDTO.sort((evento1, evento2) -> 
+        // Ordenando por Fecha y Hora de Ocurrencia
+        datosPrincipalesDTO.sort((evento1, evento2) -> 
             evento1.getFechaHoraOcurrencia().compareTo(evento2.getFechaHoraOcurrencia())
         );
     
-        return eventosSismicosFiltradosDTO;
+        // retornar datos principales ordenados 
+        return datosPrincipalesDTO;
     }
     
     public DatosRegistradosDTO tomarEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
@@ -220,9 +224,9 @@ public class GestorRevisionManualService {
     
     public void confirmarEventoSismico() {
         
-        EstadoDTO estadoConfirmadoDTO = null; // Initialize to null
+        EstadoDTO estadoConfirmadoDTO = null; 
 
-        // Se busca el estado "Rechazado"
+        // Se busca el estado "Confirmado"
         for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
             if (estadoDTO.sosConfirmado()) {
                 estadoConfirmadoDTO = estadoDTO;
@@ -230,9 +234,9 @@ public class GestorRevisionManualService {
             }
         }
 
-        // Revisando que efectivamente el estado rechazado haya sido encontrado en la base de datos
+        // Revisando que efectivamente el estado confirmado haya sido encontrado en la base de datos
         if (estadoConfirmadoDTO == null) {
-            throw new RuntimeException("Estado 'Rechazado' no encontrado en la base de datos.");
+            throw new RuntimeException("Estado 'Confirmado' no encontrado en la base de datos.");
         }
 
         // Obteniendo al usaurio logueado con id 1
@@ -243,15 +247,15 @@ public class GestorRevisionManualService {
 
         System.out.println("d");
 
-        // Rechazar el evento sismico seleccionado 
-        eventoSismicoService.rechazar(this.eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoRechazadoDTO, responsableDeInspeccionDTO);
+        // Confirmar el evento sismico seleccionado 
+        eventoSismicoService.confirmar(this.eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoConfirmadoDTO, responsableDeInspeccionDTO);
 
     }
 
 
     public void rechazarEventoSismico() {
         
-        EstadoDTO estadoRechazadoDTO = null; // Initialize to null
+        EstadoDTO estadoRechazadoDTO = null; 
 
         // Se busca el estado "Rechazado"
         for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {

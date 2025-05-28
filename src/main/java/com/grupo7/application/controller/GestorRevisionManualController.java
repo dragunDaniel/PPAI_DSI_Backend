@@ -53,6 +53,12 @@ public class GestorRevisionManualController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/confirmarEventoSismicoSeleccionado")
+    public ResponseEntity<Boolean> confirmarEventoSismicoSeleccionado() {
+        boolean resultado = gestorRevisionManualService.confirmarEventoSismicoSeleccionado();
+        return ResponseEntity.ok(resultado);
+    }
+
     // rechazarEvento
     @GetMapping("/rechazarEventoSismicoSeleccionado")
     public ResponseEntity<Boolean> rechazarEventoSismicoSeleccionado() {
