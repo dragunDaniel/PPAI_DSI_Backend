@@ -4,6 +4,7 @@ import ManualRevisionPage from "./components/ManualRevisionPage";
 import DisplayRegisteredDataPage from "./components/DisplayRegisteredDataPage";
 import DeveloperOptionsPage from "./components/DeveloperOptionsPage";
 import DataModificationPage from "./components/DataModificationPage";
+import OptionSelection from "./components/OptionSelection";
 import {
   purpleButtonStyle,
   secondaryButtonStyle,
@@ -234,7 +235,17 @@ function App() {
   };
 
   const handleCancelModifyData = () => {
-    setCurrentPage("manualRevision"); // O la página que corresponda
+    setCurrentPage("optionSelection");
+  };
+
+  const handleOptionConfirm = () => {
+    // Acción para confirmar evento
+  };
+  const handleOptionReject = () => {
+    // Acción para rechazar evento
+  };
+  const handleOptionExpert = () => {
+    // Acción para solicitar revisión a experto
   };
 
   return (
@@ -302,6 +313,14 @@ function App() {
           onToggleEventGroup={handleToggleEventGroup}
           onToggleCambiosEstadoHistory={handleToggleCambiosEstadoHistory}
           onGoBackFromCambiosEstado={handleGoBackFromCambiosEstado}
+        />
+      )}
+
+      {currentPage === "optionSelection" && (
+        <OptionSelection
+          onConfirm={handleOptionConfirm}
+          onReject={handleOptionReject}
+          onExpert={handleOptionExpert}
         />
       )}
     </div>
