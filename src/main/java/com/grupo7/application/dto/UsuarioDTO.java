@@ -2,7 +2,6 @@ package com.grupo7.application.dto;
 
 // Entidades
 import com.grupo7.application.entity.Empleado;
-import com.grupo7.application.entity.Usuario;
 
 public class UsuarioDTO {
     public Long idUsuario;

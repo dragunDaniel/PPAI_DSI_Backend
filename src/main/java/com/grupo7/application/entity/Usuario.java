@@ -4,7 +4,6 @@ package com.grupo7.application.entity;
 import jakarta.persistence.*;
 
 // Entidades
-import com.grupo7.application.entity.Empleado;
 
 @Entity
 public class Usuario {

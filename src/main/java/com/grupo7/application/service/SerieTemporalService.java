@@ -6,9 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Optional; // Keep if findById is used
-import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 // Entities
 import com.grupo7.application.entity.SerieTemporal;
@@ -27,11 +24,6 @@ import com.grupo7.application.dto.DetalleMuestraSismicaDTO;
 import com.grupo7.application.mapper.SerieTemporalMapper;
 import com.grupo7.application.mapper.MuestraSismicaMapper;
 import com.grupo7.application.mapper.DetalleMuestraSismicaMapper;
-
-// Services (keep only if their specific methods are still used for business logic/validation, not fetching)
-import com.grupo7.application.service.MuestraSismicaService; // For potential business logic/validation
-import com.grupo7.application.service.DetalleMuestraSismicaService; // For potential business logic/validation
-
 
 @Service
 public class SerieTemporalService {

@@ -6,15 +6,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Comparator;
 
 // Entidades
 import com.grupo7.application.entity.EventoSismico;
 
 // DTOs
-import com.grupo7.application.dto.TipoDeDatoDTO;
 import com.grupo7.application.dto.EventoSismicoDTO;
 import com.grupo7.application.dto.EventoSismicoBuscadoDTO;
 import com.grupo7.application.dto.SerieTemporalDetalleDTO; // Se mantiene si se usa para otros fines o como parte de un DTO anidado
@@ -25,15 +22,6 @@ import com.grupo7.application.dto.UsuarioDTO;
 
 // Mappers 
 import com.grupo7.application.mapper.EventoSismicoMapper;
-
-// Servicios de Entidades
-import com.grupo7.application.service.TipoDeDatoService;
-import com.grupo7.application.service.EventoSismicoService;
-import com.grupo7.application.service.EstadoService;
-import com.grupo7.application.service.UsuarioService;
-
-// Otros Gestores
-import com.grupo7.application.service.GestorGenerarSismogramaService;
 
 @Service
 public class GestorRevisionManualService {
