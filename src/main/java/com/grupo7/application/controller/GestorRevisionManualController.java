@@ -48,9 +48,15 @@ public class GestorRevisionManualController {
     }
 
     // tomarRechazoModificacion
-    @GetMapping("/tomarRechazoModificacion")
-    public ResponseEntity<Boolean> tomarRechazoModificacion() {
-        boolean resultado = gestorRevisionManualService.tomarRechazoModificacion();
+    @GetMapping("/tomerRechazoModificacion")
+    public ResponseEntity tomarRechazoModificacion() {
+        return ResponseEntity.ok().build();
+    }
+
+    // rechazarEvento
+    @GetMapping("/rechazarEventoSismicoSeleccionado")
+    public ResponseEntity<Boolean> rechazarEventoSismicoSeleccionado() {
+        boolean resultado = gestorRevisionManualService.rechazarEventoSismicoSeleccionado();
         return ResponseEntity.ok(resultado);
     }
     

@@ -166,8 +166,8 @@ public class GestorRevisionManualService {
         }
     }
 
-    // romarRechazoModificacion
-    public boolean tomarRechazoModificacion() {
+    // 
+    public boolean rechazarEventoSismicoSeleccionado() {
         
         // Validar Datos Registrados para el Evento Sismico Seleccionado
         if (validarDatosSismicos() == false) {
@@ -175,7 +175,7 @@ public class GestorRevisionManualService {
         }
 
         // Actualizar el estado del evento sismico seleccionado a rechazado
-        rechazarEventoSismicoSeleccionado();
+        rechazarEventoSismico();
 
         
         // llamar a fin de caso de uso
@@ -203,7 +203,7 @@ public class GestorRevisionManualService {
 
     }
 
-    public void rechazarEventoSismicoSeleccionado() {
+    public void rechazarEventoSismico() {
         
         EstadoDTO estadoRechazadoDTO = null; // Initialize to null
 
