@@ -1,44 +1,8 @@
-import React, { useRef } from "react";
+import React from "react";
 
-function OptionSelection({ onConfirm, onReject, onExpert }) {
-  const expertBtnRef = useRef(null);
-  const expertSparkleContainerRef = useRef(null);
-
+function OptionSelection({ onConfirm, onReject }) {
   const handleExpertClick = () => {
-    const btn = expertBtnRef.current;
-    const container = expertSparkleContainerRef.current;
-    if (!btn || !container) return;
-    container.style.position = "absolute";
-    container.style.left = `${btn.offsetLeft}px`;
-    container.style.top = `${btn.offsetTop}px`;
-    container.style.width = `${btn.offsetWidth}px`;
-    container.style.height = `${btn.offsetHeight}px`;
-    container.style.pointerEvents = "none";
-    container.style.zIndex = 10;
-    for (let i = 0; i < 32; i++) {
-      const sparkle = document.createElement("span");
-      sparkle.style.position = "absolute";
-      sparkle.style.pointerEvents = "none";
-      sparkle.style.width = "6px";
-      sparkle.style.height = "6px";
-      sparkle.style.borderRadius = "50%";
-      sparkle.style.background = "gold";
-      sparkle.style.opacity = "0.85";
-      sparkle.style.boxShadow = "0 0 8px 2px gold";
-      sparkle.style.left = `${50 + 60 * Math.cos((i / 32) * 2 * Math.PI)}%`;
-      sparkle.style.top = `${50 + 60 * Math.sin((i / 32) * 2 * Math.PI)}%`;
-      sparkle.style.transform = "translate(-50%, -50%) scale(0.7)";
-      sparkle.style.transition = "all 0.8s cubic-bezier(.4,2,.6,1)";
-      container.appendChild(sparkle);
-      setTimeout(() => {
-        sparkle.style.opacity = "0";
-        sparkle.style.transform = `translate(-50%, -50%) scale(2.2)`;
-      }, 10);
-      setTimeout(() => {
-        sparkle.remove();
-      }, 900);
-    }
-    if (onExpert) onExpert();
+    window.location.href = "/"; // Cambia la ruta si tu página principal es diferente
   };
 
   return (
@@ -87,7 +51,6 @@ function OptionSelection({ onConfirm, onReject, onExpert }) {
         </button>
         <div style={{ position: "relative", width: "320px", maxWidth: "90%" }}>
           <button
-            ref={expertBtnRef}
             onClick={handleExpertClick}
             style={{
               background: "#00bfff",
@@ -107,7 +70,6 @@ function OptionSelection({ onConfirm, onReject, onExpert }) {
           >
             Solicitar revisión a experto
           </button>
-          <div ref={expertSparkleContainerRef} style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }} />
         </div>
       </div>
     </div>
