@@ -111,7 +111,7 @@ public class EventoSismicoService {
     } 
 
     @Transactional(readOnly = true)
-    private EventoSismico obtenerEntidadDesdeDTO(EventoSismicoDTO dto) {
+    public EventoSismico obtenerEntidadDesdeDTO(EventoSismicoDTO dto) {
         return eventoSismicoRepository.findByIdWithDetails(dto.getId())
             .orElseThrow(() -> new RuntimeException("EventoSismico no encontrado con id: " + dto.getId()));
     }

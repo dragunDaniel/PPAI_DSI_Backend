@@ -5,7 +5,11 @@ import {
   disabledButtonStyle,
 } from "../styles/commonStyles";
 
-function HomePage({ onManualRevisionClick, onDeveloperOptionsClick }) {
+function HomePage({
+  onManualRevisionClick,
+  onDeveloperOptionsClick,
+  registrarRevisionManualDisabled,
+}) {
   return (
     <div style={{ textAlign: "center", padding: "50px 0" }}>
       <h1 style={{ color: "#2c3e50", marginBottom: "30px" }}>
@@ -19,7 +23,11 @@ function HomePage({ onManualRevisionClick, onDeveloperOptionsClick }) {
           gap: "10px",
         }}
       >
-        <button onClick={onManualRevisionClick} style={primaryButtonStyle}>
+        <button
+          onClick={onManualRevisionClick}
+          style={registrarRevisionManualDisabled ? disabledButtonStyle : primaryButtonStyle}
+          disabled={registrarRevisionManualDisabled}
+        >
           Registrar Revisión Manual
         </button>
         <button onClick={onDeveloperOptionsClick} style={secondaryButtonStyle}>

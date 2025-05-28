@@ -80,13 +80,7 @@ public class GestorRevisionManualService {
     
         return eventosSismicosFiltradosDTO;
     }
-
-    /**
-     * Tomar la selección de un Evento Sísmico.
-     * Bloquea el evento y luego busca sus datos registrados en una estructura jerárquica.
-     * @param eventoSismicoSeleccionadoDTO El DTO del evento sísmico seleccionado.
-     * @return Un DatosRegistradosDTO con la información detallada y jerárquica.
-     */
+    
     public DatosRegistradosDTO tomarEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
     
         // Guardar evento sismico seleccionado en el gestor
@@ -113,12 +107,8 @@ public class GestorRevisionManualService {
     // Obtener hora actual del sistema
     public LocalDateTime obtenerHoraActual() {
         return LocalDateTime.now();
-    }    
+    }
 
-    /**
-     * Bloquea el estado de un evento sísmico seleccionado a "BloqueadoEnRevision".
-     * @param eventoSismicoSeleccionadoDTO El DTO del evento sísmico a bloquear.
-     */
     public void bloquearEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
         
         EstadoDTO estadoBloqueadoDTO = null; // Inicializando el estado buscado en null
@@ -140,12 +130,6 @@ public class GestorRevisionManualService {
         eventoSismicoService.bloquearPorRevision(eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoBloqueadoDTO);    
     }
 
-    /**
-     * Busca los datos registrados para un evento sísmico, y los transforma en un DatosRegistradosDTO
-     * que contiene la información jerárquica de las series temporales y sus detalles.
-     * @param eventoSismicoSeleccionadoDTO El DTO del evento sísmico seleccionado.
-     * @return Un DatosRegistradosDTO con la información detallada y jerárquica.
-     */
     public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
         // Se llama a EventoSismicoService para obtener el DTO jerárquico completo (DatosRegistradosDTO)
         DatosRegistradosDTO datosRegistradosDTO = eventoSismicoService.buscarDatosRegistrados(eventoSismicoSeleccionadoDTO);
@@ -187,12 +171,13 @@ public class GestorRevisionManualService {
     private boolean validarDatosSismicos() {
 
         // Obteniendo la entidad del evento sismico seleccionado
-        EventoSismico eventoSismicoSeleccionadoNoDTO = eventoSismicoMapper.toEntity(this.eventoSismicoSeleccionadoDTO);
+        EventoSismico eventoSismicoSeleccionadoNoDTO = eventoSismicoService.obtenerEntidadDesdeDTO(this.eventoSismicoSeleccionadoDTO);
+
 
         // Validando los datos del evento sismico
         if ( eventoSismicoSeleccionadoNoDTO.getAlcanceSismo() == null ||
              eventoSismicoSeleccionadoNoDTO.getOrigenGeneracion() == null ||
-             eventoSismicoSeleccionadoNoDTO.getValorMagnitud() == null) { 
+             eventoSismicoSeleccionadoNoDTO.getValorMagnitud() == null) {
 
                 // Los datos no son válidos
                 return false;
@@ -225,6 +210,8 @@ public class GestorRevisionManualService {
 
         // Obteniendo al responsable de inspeccion (empleado logueado como usuario responsable de este cambio de esatdo)
         EmpleadoDTO responsableDeInspeccionDTO = usuarioService.obtenerEmpleado(usuarioLogueadoDTO.getIdUsuario());
+
+        System.out.println("d");
 
         // Rechazar el evento sismico seleccionado 
         eventoSismicoService.rechazar(this.eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoRechazadoDTO, responsableDeInspeccionDTO);

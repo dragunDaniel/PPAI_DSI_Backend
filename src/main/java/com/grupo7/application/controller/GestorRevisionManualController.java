@@ -48,7 +48,7 @@ public class GestorRevisionManualController {
     }
 
     // tomarRechazoModificacion
-    @GetMapping("/tomerRechazoModificacion")
+    @GetMapping("/tomarRechazoModificacion")
     public ResponseEntity tomarRechazoModificacion() {
         return ResponseEntity.ok().build();
     }
