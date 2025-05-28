@@ -41,7 +41,7 @@ public class DetalleMuestraSismicaService {
     }
 
     // Obtener Datos (Muetra Sismicas para una Serie Temporal)
-    public boolean getDatos(Long detalleMuestraSismicaIteradaId) {
+    public String getDatos(Long detalleMuestraSismicaIteradaId) {
         
         // Obteniendo el Detalle de Muestra Sismica a partir del Id
         DetalleMuestraSismica detalleMuestraSismicaIterada = obtenerPorId(detalleMuestraSismicaIteradaId);
@@ -50,14 +50,20 @@ public class DetalleMuestraSismicaService {
         TipoDeDatoDTO tipoDTO = tipoDeDatoMapper.toDTO(detalleMuestraSismicaIterada.getTipoDeDato());
 
         // Verificando que el tipo de dato asociado al detalle de muestra sismica sea el buscado
-        if (tipoDTO.esTuDenominacion("Velocidad") || tipoDTO.esTuDenominacion("Longitud") || tipoDTO.esTuDenominacion("Frecuencia")) {
-            return true;
+        if (tipoDTO.esTuDenominacion("Velocidad")) {
+            return "Velocidad";
         }
-
-        // El tipo de dato asociado al detalle de la muestra sismica no corresponde a uno de los tipos buscados
-        return false;
-
+        if (tipoDTO.esTuDenominacion("Longitud")) {
+            return "Longitud";
+        }
+        if (tipoDTO.esTuDenominacion("Frecuencia")) {
+            return "Frecuencia";
+        }
+        
+        // Si no es de los datos buscados retornar null
+        return null;
     }
+
 
     public DetalleMuestraSismica obtenerPorId(Long id) {
         return detalleMuestraSismicaRepository.findById(id)

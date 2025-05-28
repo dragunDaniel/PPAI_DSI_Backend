@@ -1,10 +1,8 @@
 package com.grupo7.application.dto;
 
-// Assuming these are the fields extracted from your JSON for a detail
-// You might need to adjust field names (e.g., tipoDatoId vs tipoDeDatoId)
 public class DetalleMuestraSismicaDTO {
     private Long id;
-    private Long tipoDatoId; // Assuming this maps to a specific data type ID
+    private Long tipoDatoId; 
     private String denominacion;
     private Double valor;
 

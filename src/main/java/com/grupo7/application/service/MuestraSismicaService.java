@@ -51,9 +51,9 @@ public class MuestraSismicaService {
      * @param muestraSismicaId El ID de la MuestraSismica de la cual se quieren obtener los detalles.
      * @return Una lista de DetalleMuestraSismica que cumplen con la condición de validez.
      */
-    public List<DetalleMuestraSismica> getDatos(Long muestraSismicaId) {
+    public List<DetalleMuestraSismicaDTO> getDatos(Long muestraSismicaId) {
         // Definir la lista de Detalles de la Muestra Sísmica Iterada
-        List<DetalleMuestraSismica> detallesValidos = new ArrayList<>(); 
+        List<DetalleMuestraSismicaDTO> detallesValidos = new ArrayList<>(); 
 
         // Buscar la Muestra Sísmica por su Id
         MuestraSismica muestraSismica = obtenerPorId(muestraSismicaId);
@@ -65,9 +65,19 @@ public class MuestraSismicaService {
 
                 // Verificar que dicho detalle esté asociado a cualquiera de los tipos de datos buscados
                 // Asumiendo que detalleMuestraSismicaService.getDatos(id) es un método de validación/filtro
-                if (detalleMuestraSismicaService.getDatos(detalleMuestraSismicaIterada.getId())) {
-                    // Entonces se lo agrega a la lista
-                    detallesValidos.add(detalleMuestraSismicaIterada);
+                
+                // obteniendo la denominacion del tipo de dato 
+                String denominacion = detalleMuestraSismicaService.getDatos(detalleMuestraSismicaIterada.getId());
+                
+                // Si la denominacion es correcta, agregar a la lista de datos registrados 
+                if (denominacion != null) {
+
+                    // Agregar la denominacion al detalle de muestra sismica y agregar a la lista de datos validos
+                    // CORRECCIÓN en MuestraSismicaService.getDatos(...)
+                    DetalleMuestraSismicaDTO dto = detalleMuestraSismicaMapper.toDTO(detalleMuestraSismicaIterada);
+                    dto.setDenominacion(denominacion);
+                    detallesValidos.add(dto);
+
                 }
             }
         }
