@@ -6,18 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
-import java.util.Set;
-import java.util.Comparator; // Import for sorting
 
 // Entities
 import com.grupo7.application.entity.EventoSismico;
 import com.grupo7.application.entity.SerieTemporal;
 import com.grupo7.application.entity.MuestraSismica;
 import com.grupo7.application.entity.DetalleMuestraSismica;
-import com.grupo7.application.entity.Estado;
 
 // Repositories
 import com.grupo7.application.repository.EventoSismicoRepository;
@@ -28,12 +24,9 @@ import com.grupo7.application.dto.EventoSismicoBuscadoDTO;
 import com.grupo7.application.dto.CambioEstadoDTO;
 import com.grupo7.application.dto.EstadoDTO;
 import com.grupo7.application.dto.SerieTemporalDetalleDTO;
-import com.grupo7.application.dto.SerieTemporalDTO;
 import com.grupo7.application.dto.DetalleMuestraSismicaDTO;
-import com.grupo7.application.dto.SismografoDTO;
 import com.grupo7.application.dto.DatosRegistradosDTO;
 import com.grupo7.application.dto.MuestraSismicaDTO;
-import com.grupo7.application.dto.EstacionSismologicaDTO;
 import com.grupo7.application.dto.EmpleadoDTO;
 
 // Mappers
@@ -45,12 +38,15 @@ import com.grupo7.application.mapper.MuestraSismicaMapper;
 import com.grupo7.application.mapper.DetalleMuestraSismicaMapper;
 import com.grupo7.application.mapper.SismografoMapper;
 
+<<<<<<< HEAD
 // Services
 import com.grupo7.application.service.CambioEstadoService;
 import com.grupo7.application.service.EstadoService;
 import com.grupo7.application.service.SerieTemporalService;
 import com.grupo7.application.service.DetalleMuestraSismicaService;
 
+=======
+>>>>>>> 94e1bc50e1f755a856c5c83850ba678f73fc4667
 @Service
 public class EventoSismicoService {
 

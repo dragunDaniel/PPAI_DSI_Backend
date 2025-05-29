@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Optional;
-import java.time.LocalDateTime;
 
 // Entities
 import com.grupo7.application.entity.MuestraSismica;
@@ -24,7 +22,6 @@ import com.grupo7.application.mapper.DetalleMuestraSismicaMapper;
 import com.grupo7.application.mapper.MuestraSismicaMapper;
 
 // Services 
-import com.grupo7.application.service.DetalleMuestraSismicaService;
 
 @Service
 public class MuestraSismicaService {

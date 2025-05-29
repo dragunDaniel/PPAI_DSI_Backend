@@ -2,7 +2,6 @@ package com.grupo7.application.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import com.grupo7.application.entity.CambioEstado;
 import com.grupo7.application.dto.CambioEstadoDTO;

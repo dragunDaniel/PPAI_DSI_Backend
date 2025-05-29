@@ -6,26 +6,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Importar para control transaccional
 import java.util.List;
 import java.util.Optional;
-import java.time.LocalDateTime;
 import java.util.stream.Collectors; // Para operaciones de stream
 
 // Entities
 import com.grupo7.application.entity.CambioEstado;
 import com.grupo7.application.entity.EventoSismico;
-import com.grupo7.application.entity.Estado; // Importar Estado si se usa en el servicio
 
 // Repositories
 import com.grupo7.application.repository.CambioEstadoRepository;
 
 // DTOs
 import com.grupo7.application.dto.CambioEstadoDTO;
-import com.grupo7.application.dto.EstadoDTO; // Importar EstadoDTO si se usa
 
 // Mappers
 import com.grupo7.application.mapper.CambioEstadoMapper;
 
 // Services
-import com.grupo7.application.service.EstadoService;
 
 @Service
 public class CambioEstadoService {

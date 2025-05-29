@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-import javax.annotation.processing.Generated;
 
 // DTOs
 import com.grupo7.application.dto.CambioEstadoDTO;

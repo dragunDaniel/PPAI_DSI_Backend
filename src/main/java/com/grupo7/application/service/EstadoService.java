@@ -4,7 +4,6 @@ package com.grupo7.application.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 // Entities
 import com.grupo7.application.entity.Estado;
