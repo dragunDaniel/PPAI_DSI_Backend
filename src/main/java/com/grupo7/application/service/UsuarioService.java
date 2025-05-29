@@ -35,7 +35,7 @@ public class UsuarioService {
         this.empleadoMapper = empleadoMapper;
     }
 
-    public EmpleadoDTO obtenerEmpleadoActual() {
+    public EmpleadoDTO obtenerEmpleado() {
         Usuario usuario = usuarioRepository.findById(1L)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Empleado empleado = usuario.getEmpleado();

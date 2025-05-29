@@ -137,7 +137,7 @@ public class GestorRevisionManualService {
             throw new RuntimeException("Estado 'BloqueadoEnRevision' no encontrado en la base de datos.");
         }
 
-        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
+        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleado();
         eventoSismicoService.bloquearPorRevision(this.eventoSismicoSeleccionadoDTO, empleadoDTO, fechaHoraActual, estadoBloqueadoDTO);
     }
 
@@ -185,7 +185,7 @@ public class GestorRevisionManualService {
                 break;
             }
         }
-        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
+        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleado();
         eventoSismicoService.confirmar(this.eventoSismicoSeleccionadoDTO, empleadoDTO, fechaHoraActual, estadoConfirmado);
 
         // El cambio a estado Confirmado fue realizado con éxito
@@ -195,7 +195,7 @@ public class GestorRevisionManualService {
     public boolean actualizarEventoSismicoARechazado() {
         EstadoDTO estadoRechazadoDTO = null;
         final LocalDateTime fechaHoraActual = getFechaHoraActual();
-
+        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleado();
 
         for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
             if (estadoDTO.sosBloqueadoEnRevision()) {
@@ -203,7 +203,6 @@ public class GestorRevisionManualService {
                 break;
             }
         }
-        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
         eventoSismicoService.rechazarEventoSismico(this.eventoSismicoSeleccionadoDTO, empleadoDTO, fechaHoraActual, estadoRechazadoDTO);
         return true;
     }
@@ -224,7 +223,7 @@ public class GestorRevisionManualService {
             }
         }
 
-        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
+        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleado();
         eventoSismicoService.derivarAExperto(this.eventoSismicoSeleccionadoDTO, empleadoDTO, fechaHoraActual, estadoDerivadoAExperto);
         // El cambio a estado DerivadoAExperto fue realizado con éxito
         return true;
