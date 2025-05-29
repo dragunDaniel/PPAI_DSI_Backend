@@ -158,8 +158,18 @@ public class EventoSismicoService {
     // Obtener datos principales de los eventos sismicos
     public List<EventoSismicoDTO> obtenerDatosPrincipales(List<EventoSismicoBuscadoDTO> buscados) {
         return buscados.stream()
-                       .map(eventoSismicoBuscadoMapper::toBasicDTO)  // convierte cada BuscadoDTO a simple DTO
-                       .collect(Collectors.toList());
+            .map(buscadoDTO -> {
+                EventoSismicoDTO eventoSismicoDTO = new EventoSismicoDTO();
+                eventoSismicoDTO.setId(buscadoDTO.getId());
+                eventoSismicoDTO.setFechaHoraOcurrencia(buscadoDTO.getFechaHoraOcurrencia());
+                eventoSismicoDTO.setLatitudEpicentro(buscadoDTO.getLatitudEpicentro());
+                eventoSismicoDTO.setLongitudEpicentro(buscadoDTO.getLongitudEpicentro());
+                eventoSismicoDTO.setLatitudHipocentro(buscadoDTO.getLatitudHipocentro());
+                eventoSismicoDTO.setLongitudHipocentro(buscadoDTO.getLongitudHipocentro());
+                eventoSismicoDTO.setValorMagnitud(buscadoDTO.getValorMagnitud());
+                return eventoSismicoDTO;
+            })
+            .collect(Collectors.toList());
     }
     
     
