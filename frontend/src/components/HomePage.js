@@ -34,7 +34,7 @@ function HomePage({
           Opciones de Developer
         </button>
         <button disabled style={disabledButtonStyle}>
-          Administrar Parámetros (Próximamente)
+          ...
         </button>
       </div>
     </div>

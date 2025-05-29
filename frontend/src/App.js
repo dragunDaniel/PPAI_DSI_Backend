@@ -35,13 +35,6 @@ function App() {
   const [optionActionError, setOptionActionError] = useState(null);
   const [optionActionSuccess, setOptionActionSuccess] = useState(null);
 
-  // Estado para login
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loginUsername, setLoginUsername] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [loginError, setLoginError] = useState(null);
-  const [loginFadeOut, setLoginFadeOut] = useState(false);
-
   // Handlers for page navigation and data fetching
   const handleManualRevisionClick = async () => {
     setCurrentPage("manualRevision");
@@ -336,23 +329,52 @@ function App() {
     }
 };
 
-  const handleOptionExpert = () => {
-    // No-op: only sparkle effect in OptionSelection
-  };
-
-  // Handler para login
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (!loginUsername.trim() || !loginPassword.trim()) {
-      setLoginError("Por favor, complete ambos campos.");
+  // NEW: Handler for "Solicitar revisión a experto"
+  const handleOptionDeriveToExpert = async () => {
+    if (!selectedEvent || selectedEvent.id === undefined || selectedEvent.id === null) {
+      setOptionActionError("No hay evento sísmico seleccionado para derivar a experto.");
+      setOptionActionSuccess(null);
       return;
     }
-    setLoginFadeOut(true);
-    setTimeout(() => {
-      setIsLoggedIn(true);
-      setLoginError(null);
-      setLoginFadeOut(false);
-    }, 500);
+
+    setOptionActionLoading(true);
+    setOptionActionError(null);
+    setOptionActionSuccess(null);
+
+    try {
+      const url = "http://localhost:8080/api/gestor-revision-manual/derivarAExpertoEventoSismicoSeleccionado";
+
+      const response = await fetch(url, {
+        method: "GET", // Assuming GET as per confirmar and rechazar
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      const text = await response.text();
+      if (!response.ok) {
+        throw new Error(text || "Error en la respuesta del servidor.");
+      }
+      
+      setOptionActionSuccess("Evento sísmico derivado a experto correctamente.");
+      setOptionActionError(null);
+
+      setTimeout(() => {
+        setCurrentPage("home");
+        setSelectedEvent(null);
+        setOptionActionSuccess(null);
+      }, 1000);
+    } catch (error) {
+      console.error("Error al derivar el evento a experto:", error);
+      setOptionActionError(error.message || "Error al derivar el evento a experto.");
+      setOptionActionSuccess(null);
+    } finally {
+      setOptionActionLoading(false);
+    }
+  };
+
+  const handleOptionExpert = () => {
+    // No-op: only sparkle effect in OptionSelection
   };
 
   return (
@@ -369,73 +391,11 @@ function App() {
         color: "#333",
       }}
     >
-      {/* Login window */}
-      {!isLoggedIn && (
-        <div
-          style={{
-            maxWidth: 350,
-            margin: "40px auto 30px auto",
-            padding: 24,
-            border: "1px solid #e0e0e0",
-            borderRadius: 10,
-            background: "#f9f9f9",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-            opacity: loginFadeOut ? 0 : 1,
-            transform: loginFadeOut ? 'scale(0.95)' : 'scale(1)',
-            transition: 'opacity 0.5s, transform 0.5s',
-          }}
-        >
-          <h2 style={{ textAlign: "center", marginBottom: 18 }}>Iniciar sesión</h2>
-          <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: 14 }}>
-              <input
-                type="text"
-                placeholder="Usuario"
-                value={loginUsername}
-                onChange={e => setLoginUsername(e.target.value)}
-                style={{ width: "100%", padding: 8, borderRadius: 5, border: "1px solid #ccc" }}
-              />
-            </div>
-            <div style={{ marginBottom: 14 }}>
-              <input
-                type="password"
-                placeholder="Contraseña"
-                value={loginPassword}
-                onChange={e => setLoginPassword(e.target.value)}
-                style={{ width: "100%", padding: 8, borderRadius: 5, border: "1px solid #ccc" }}
-              />
-            </div>
-            {loginError && <div style={{ color: "red", marginBottom: 10 }}>{loginError}</div>}
-            <button
-              type="submit"
-              style={{
-                width: "100%",
-                background: "#6c63ff",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                padding: "10px 0",
-                fontWeight: "bold",
-                fontSize: "1.1em",
-                cursor: "pointer"
-              }}
-            >
-              Iniciar sesión
-            </button>
-          </form>
-        </div>
-      )}
-      {isLoggedIn && (
-        <div style={{ textAlign: "center", marginBottom: 30 }}>
-          <h2>Bienvenido {loginUsername}</h2>
-        </div>
-      )}
-
       {currentPage === "home" && (
         <HomePage
           onManualRevisionClick={handleManualRevisionClick}
           onDeveloperOptionsClick={handleDeveloperOptionsClick}
-          registrarRevisionManualDisabled={!isLoggedIn}
+          registrarRevisionManualDisabled={false}
         />
       )}
 
@@ -491,7 +451,8 @@ function App() {
           <OptionSelection
             onConfirm={handleOptionConfirm}
             onReject={handleOptionReject}
-            onExpert={handleOptionExpert}
+            onExpert={handleOptionExpert} // This is the existing expert handler
+            onDeriveToExpert={handleOptionDeriveToExpert} // NEW: Pass the new handler
           />
           {(optionActionLoading || optionActionError || optionActionSuccess) && (
             <div style={{ marginTop: 24, textAlign: "center" }}>

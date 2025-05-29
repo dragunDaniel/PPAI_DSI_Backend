@@ -95,18 +95,10 @@ function DisplayRegisteredDataPage({
                     Serie Temporal ID: <strong>{serie.id}</strong>
                   </h4>
                   <p>
-                    <strong>Condición Alarma:</strong>{" "}
-                    {serie.condicionAlarma || "N/A"}
-                  </p>
-                  <p>
                     <strong>Fecha y Hora Registros:</strong>{" "}
                     {serie.fechaHoraRegistros
                       ? new Date(serie.fechaHoraRegistros).toLocaleString()
                       : "N/A"}
-                  </p>
-                  <p>
-                    <strong>Sismógrafo Identificador:</strong>{" "}
-                    {serie.sismografoIdentificador || "N/A"}
                   </p>
                   <p>
                     <strong>Código Estación:</strong>{" "}
@@ -221,29 +213,8 @@ function DisplayRegisteredDataPage({
       )}
 
       <div style={{ marginTop: "30px", textAlign: "center" }}>
-        <img
-          src="/sismogram.jpg"
-          alt="Sismograma"
-          style={{
-            width: "500px",
-            maxWidth: "90%",
-            height: "auto",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-          }}
-        />
-      </div>
-      <div
-        style={{
-          marginTop: "30px",
-          display: "flex",
-          justifyContent: "center",
-          gap: "10px",
-        }}
-      >
         <button style={purpleButtonStyle}>
-          Visualizar en un mapa evento sismico y estaciones involucradas
+          Visualizar en un mapa evento sísmico y estaciones involucradas
         </button>
         <button onClick={onNoDataEdit} style={secondaryButtonStyle}>
           No visualizar

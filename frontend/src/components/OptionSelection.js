@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function OptionSelection({ onConfirm, onReject }) {
+function OptionSelection({ onConfirm, onReject, onDeriveToExpert }) { // Added onDeriveToExpert here
   const [disabled, setDisabled] = useState(false);
 
   const handleConfirm = () => {
@@ -13,9 +13,10 @@ function OptionSelection({ onConfirm, onReject }) {
     onReject && onReject();
   };
 
-  const handleExpertClick = () => {
+  // Renamed and updated this handler to call onDeriveToExpert
+  const handleDeriveToExpert = () => {
     setDisabled(true);
-    window.location.href = "/"; // Cambia la ruta si tu página principal es diferente
+    onDeriveToExpert && onDeriveToExpert(); // Call the prop passed from App.js
   };
 
   return (
@@ -70,7 +71,7 @@ function OptionSelection({ onConfirm, onReject }) {
         </button>
         <div style={{ position: "relative", width: "320px", maxWidth: "90%" }}>
           <button
-            onClick={handleExpertClick}
+            onClick={handleDeriveToExpert} // Changed from handleExpertClick to handleDeriveToExpert
             disabled={disabled}
             style={{
               background: "#00bfff",

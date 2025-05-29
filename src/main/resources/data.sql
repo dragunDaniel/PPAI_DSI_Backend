@@ -98,17 +98,19 @@ SET @serie_id_1 = LAST_INSERT_ID();
   -- MuestraSismica for SerieTemporal 1
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 08:00:01', @serie_id_1);
   SET @muestra_id_s1_m1 = LAST_INSERT_ID();
-    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s1_m1
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s1_m1 (Velocidad, Longitud, Frecuencia)
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (1, 0.015, @muestra_id_s1_m1),
-      (2, 0.003, @muestra_id_s1_m1);
+      (2, 0.003, @muestra_id_s1_m1), -- Velocidad
+      (3, 0.120, @muestra_id_s1_m1), -- Longitud
+      (4, 0.060, @muestra_id_s1_m1); -- Frecuencia
 
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 08:00:02', @serie_id_1);
   SET @muestra_id_s1_m2 = LAST_INSERT_ID();
-    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s1_m2
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s1_m2 (Velocidad, Longitud, Frecuencia)
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (3, 0.120, @muestra_id_s1_m2),
-      (4, 0.060, @muestra_id_s1_m2);
+      (2, 0.004, @muestra_id_s1_m2), -- Velocidad
+      (3, 0.130, @muestra_id_s1_m2), -- Longitud
+      (4, 0.065, @muestra_id_s1_m2); -- Frecuencia
 
 
 -- SerieTemporal 2 (linked to EventoSismico ID 1, demonstrating multiple series per event)
@@ -119,17 +121,19 @@ SET @serie_id_2 = LAST_INSERT_ID();
   -- MuestraSismica for SerieTemporal 2
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 09:00:01', @serie_id_2);
   SET @muestra_id_s2_m1 = LAST_INSERT_ID();
-    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s2_m1
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s2_m1 (Velocidad, Longitud, Frecuencia)
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (1, 0.025, @muestra_id_s2_m1),
-      (2, 0.005, @muestra_id_s2_m1);
+      (2, 0.005, @muestra_id_s2_m1), -- Velocidad
+      (3, 0.150, @muestra_id_s2_m1), -- Longitud
+      (4, 0.045, @muestra_id_s2_m1); -- Frecuencia
 
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 09:00:02', @serie_id_2);
   SET @muestra_id_s2_m2 = LAST_INSERT_ID();
-    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s2_m2
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s2_m2 (Velocidad, Longitud, Frecuencia)
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (3, 0.150, @muestra_id_s2_m2),
-      (4, 0.045, @muestra_id_s2_m2);
+      (2, 0.006, @muestra_id_s2_m2), -- Velocidad
+      (3, 0.160, @muestra_id_s2_m2), -- Longitud
+      (4, 0.050, @muestra_id_s2_m2); -- Frecuencia
 
 
 -- SerieTemporal 3 (linked to EventoSismico ID 2)
@@ -140,12 +144,11 @@ SET @serie_id_3 = LAST_INSERT_ID();
   -- MuestraSismica for SerieTemporal 3
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 10:00:01', @serie_id_3);
   SET @muestra_id_s3_m1 = LAST_INSERT_ID();
-  
-    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s3_m1
-    -- Cambiamos ambos a ID_TIPO = 2 (Velocidad) para asegurar denominación no nula
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s3_m1 (Velocidad, Longitud, Frecuencia)
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (2, 0.030, @muestra_id_s3_m1),
-      (2, 0.006, @muestra_id_s3_m1);
+      (2, 0.030, @muestra_id_s3_m1), -- Velocidad
+      (3, 0.170, @muestra_id_s3_m1), -- Longitud
+      (4, 0.070, @muestra_id_s3_m1); -- Frecuencia
 
 -- SerieTemporal 4 (linked to EventoSismico ID 2, using a different Sismografo/Estacion)
 INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
@@ -155,10 +158,11 @@ SET @serie_id_4 = LAST_INSERT_ID();
   -- MuestraSismica for SerieTemporal 4
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 10:30:01', @serie_id_4);
   SET @muestra_id_s4_m1 = LAST_INSERT_ID();
-    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s4_m1
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s4_m1 (Velocidad, Longitud, Frecuencia)
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (1, 0.020, @muestra_id_s4_m1),
-      (2, 0.004, @muestra_id_s4_m1);
+      (2, 0.004, @muestra_id_s4_m1), -- Velocidad
+      (3, 0.180, @muestra_id_s4_m1), -- Longitud
+      (4, 0.055, @muestra_id_s4_m1); -- Frecuencia
 
 -- SerieTemporal 5 (linked to EventoSismico ID 2, using another different Sismografo/Estacion)
 INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
@@ -168,10 +172,11 @@ SET @serie_id_5 = LAST_INSERT_ID();
   -- MuestraSismica for SerieTemporal 5
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 11:00:01', @serie_id_5);
   SET @muestra_id_s5_m1 = LAST_INSERT_ID();
-    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s5_m1
+    -- DetalleMuestraSismica for MuestraSismica @muestra_id_s5_m1 (Velocidad, Longitud, Frecuencia)
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (1, 0.018, @muestra_id_s5_m1),
-      (2, 0.0035, @muestra_id_s5_m1);
+      (2, 0.0035, @muestra_id_s5_m1), -- Velocidad
+      (3, 0.190, @muestra_id_s5_m1), -- Longitud
+      (4, 0.060, @muestra_id_s5_m1); -- Frecuencia
 
 -- SerieTemporal 6 (linked to EventoSismico ID 3)
 INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
@@ -181,8 +186,9 @@ SET @serie_id_6 = LAST_INSERT_ID();
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 12:00:01', @serie_id_6);
   SET @muestra_id_s6_m1 = LAST_INSERT_ID();
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (1, 0.010, @muestra_id_s6_m1),
-      (2, 0.002, @muestra_id_s6_m1);
+      (2, 0.002, @muestra_id_s6_m1), -- Velocidad
+      (3, 0.100, @muestra_id_s6_m1), -- Longitud
+      (4, 0.050, @muestra_id_s6_m1); -- Frecuencia
 
 -- SerieTemporal 7 (linked to EventoSismico ID 4)
 INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
@@ -192,14 +198,16 @@ SET @serie_id_7 = LAST_INSERT_ID();
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 13:00:01', @serie_id_7);
   SET @muestra_id_s7_m1 = LAST_INSERT_ID();
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (3, 0.200, @muestra_id_s7_m1),
-      (4, 0.080, @muestra_id_s7_m1);
+      (2, 0.007, @muestra_id_s7_m1), -- Velocidad
+      (3, 0.200, @muestra_id_s7_m1), -- Longitud
+      (4, 0.080, @muestra_id_s7_m1); -- Frecuencia
 
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 13:00:02', @serie_id_7);
   SET @muestra_id_s7_m2 = LAST_INSERT_ID();
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (1, 0.035, @muestra_id_s7_m2),
-      (2, 0.007, @muestra_id_s7_m2);
+      (2, 0.008, @muestra_id_s7_m2), -- Velocidad
+      (3, 0.210, @muestra_id_s7_m2), -- Longitud
+      (4, 0.085, @muestra_id_s7_m2); -- Frecuencia
 
 -- SerieTemporal 8 (linked to EventoSismico ID 5)
 INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
@@ -209,7 +217,9 @@ SET @serie_id_8 = LAST_INSERT_ID();
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 14:00:01', @serie_id_8);
   SET @muestra_id_s8_m1 = LAST_INSERT_ID();
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (1, 0.012, @muestra_id_s8_m1);
+      (2, 0.0025, @muestra_id_s8_m1), -- Velocidad
+      (3, 0.110, @muestra_id_s8_m1), -- Longitud
+      (4, 0.055, @muestra_id_s8_m1); -- Frecuencia
 
 -- SerieTemporal 9 (linked to EventoSismico ID 6)
 INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
@@ -219,11 +229,15 @@ SET @serie_id_9 = LAST_INSERT_ID();
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 15:00:01', @serie_id_9);
   SET @muestra_id_s9_m1 = LAST_INSERT_ID();
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (2, 0.004, @muestra_id_s9_m1);
+      (2, 0.004, @muestra_id_s9_m1), -- Velocidad
+      (3, 0.130, @muestra_id_s9_m1), -- Longitud
+      (4, 0.065, @muestra_id_s9_m1); -- Frecuencia
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 15:00:02', @serie_id_9);
   SET @muestra_id_s9_m2 = LAST_INSERT_ID();
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (1, 0.022, @muestra_id_s9_m2);
+      (2, 0.005, @muestra_id_s9_m2), -- Velocidad
+      (3, 0.140, @muestra_id_s9_m2), -- Longitud
+      (4, 0.070, @muestra_id_s9_m2); -- Frecuencia
 
 
 -- SerieTemporal 10 (linked to EventoSismico ID 7)
@@ -234,7 +248,9 @@ SET @serie_id_10 = LAST_INSERT_ID();
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 16:00:01', @serie_id_10);
   SET @muestra_id_s10_m1 = LAST_INSERT_ID();
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (3, 0.100, @muestra_id_s10_m1);
+      (2, 0.003, @muestra_id_s10_m1), -- Velocidad
+      (3, 0.100, @muestra_id_s10_m1), -- Longitud
+      (4, 0.050, @muestra_id_s10_m1); -- Frecuencia
 
 
 -- SerieTemporal 11 (linked to EventoSismico ID 8)
@@ -245,8 +261,9 @@ SET @serie_id_11 = LAST_INSERT_ID();
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 17:00:01', @serie_id_11);
   SET @muestra_id_s11_m1 = LAST_INSERT_ID();
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (1, 0.028, @muestra_id_s11_m1),
-      (4, 0.055, @muestra_id_s11_m1);
+      (2, 0.0055, @muestra_id_s11_m1), -- Velocidad
+      (3, 0.160, @muestra_id_s11_m1), -- Longitud
+      (4, 0.055, @muestra_id_s11_m1); -- Frecuencia
 
 -- SerieTemporal 12 (linked to EventoSismico ID 1)
 INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
@@ -256,7 +273,9 @@ SET @serie_id_12 = LAST_INSERT_ID();
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 18:00:01', @serie_id_12);
   SET @muestra_id_s12_m1 = LAST_INSERT_ID();
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (1, 0.017, @muestra_id_s12_m1);
+      (2, 0.003, @muestra_id_s12_m1), -- Velocidad
+      (3, 0.120, @muestra_id_s12_m1), -- Longitud
+      (4, 0.060, @muestra_id_s12_m1); -- Frecuencia
 
 -- SerieTemporal 13 (linked to EventoSismico ID 2)
 INSERT INTO serie_temporal (CONDICION_ALARMA, FECHA_HORA_INICIO_REG_MUESTREO, FECHA_HORA_REGISTROS, FRECUENCIA_MUESTREO, ID_SISMOGRAFO, EVENTO_SISMICO_ID)
@@ -266,7 +285,9 @@ SET @serie_id_13 = LAST_INSERT_ID();
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 19:00:01', @serie_id_13);
   SET @muestra_id_s13_m1 = LAST_INSERT_ID();
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (2, 0.003, @muestra_id_s13_m1);
+      (2, 0.003, @muestra_id_s13_m1), -- Velocidad
+      (3, 0.130, @muestra_id_s13_m1), -- Longitud
+      (4, 0.065, @muestra_id_s13_m1); -- Frecuencia
 
 
 -- --- END NEW DATA STRUCTURE DEMONSTRATION ---
