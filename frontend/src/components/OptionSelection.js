@@ -91,7 +91,7 @@ function OptionSelection({ onConfirm, onReject, onDeriveToExpert }) { // Added o
               pointerEvents: disabled ? "none" : "auto"
             }}
           >
-            Solicitar revisión a experto
+            Derivar a experto
           </button>
         </div>
       </div>
