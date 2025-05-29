@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 
 function OptionSelection({ onConfirm, onReject }) {
+  const [disabled, setDisabled] = useState(false);
+
+  const handleConfirm = () => {
+    setDisabled(true);
+    onConfirm && onConfirm();
+  };
+
+  const handleReject = () => {
+    setDisabled(true);
+    onReject && onReject();
+  };
+
   const handleExpertClick = () => {
+    setDisabled(true);
     window.location.href = "/"; // Cambia la ruta si tu página principal es diferente
   };
 
@@ -12,7 +25,8 @@ function OptionSelection({ onConfirm, onReject }) {
       </h2>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "25px", marginTop: "40px", position: "relative" }}>
         <button
-          onClick={onConfirm}
+          onClick={handleConfirm}
+          disabled={disabled}
           style={{
             background: "#27ae60",
             color: "#fff",
@@ -25,13 +39,16 @@ function OptionSelection({ onConfirm, onReject }) {
             boxShadow: "0 2px 8px rgba(39,174,96,0.08)",
             transition: "background 0.2s",
             width: "320px",
-            maxWidth: "90%"
+            maxWidth: "90%",
+            opacity: disabled ? 0.6 : 1,
+            pointerEvents: disabled ? "none" : "auto"
           }}
         >
           Confirmar evento
         </button>
         <button
-          onClick={onReject}
+          onClick={handleReject}
+          disabled={disabled}
           style={{
             background: "#e74c3c",
             color: "#fff",
@@ -44,7 +61,9 @@ function OptionSelection({ onConfirm, onReject }) {
             boxShadow: "0 2px 8px rgba(231,76,60,0.08)",
             transition: "background 0.2s",
             width: "320px",
-            maxWidth: "90%"
+            maxWidth: "90%",
+            opacity: disabled ? 0.6 : 1,
+            pointerEvents: disabled ? "none" : "auto"
           }}
         >
           Rechazar evento
@@ -52,6 +71,7 @@ function OptionSelection({ onConfirm, onReject }) {
         <div style={{ position: "relative", width: "320px", maxWidth: "90%" }}>
           <button
             onClick={handleExpertClick}
+            disabled={disabled}
             style={{
               background: "#00bfff",
               color: "#fff",
@@ -65,7 +85,9 @@ function OptionSelection({ onConfirm, onReject }) {
               transition: "background 0.2s",
               width: "100%",
               position: "relative",
-              zIndex: 2
+              zIndex: 2,
+              opacity: disabled ? 0.6 : 1,
+              pointerEvents: disabled ? "none" : "auto"
             }}
           >
             Solicitar revisión a experto
