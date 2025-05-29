@@ -185,20 +185,52 @@ public class GestorRevisionManualService {
     }
 
     // Confimrar evento sismico seleccionado
-    public void confirmarEventoSismico() {
+    public boolean confirmarEventoSismico() {
         
+        // Verificar si el evento sismico ya está en estado Confirmado
+        if (validarEstadoActual(this.eventoSismicoSeleccionadoDTO, "Confirmado")) {
+            return false;
+        }
+
         // Confirmar el evento sismico seleccionado 
         EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
         eventoSismicoService.confirmar(this.eventoSismicoSeleccionadoDTO, empleadoDTO);
+    
+        // El cambio a estado Confirmado fue realizado con éxito
+        return true;
     }
 
-
-    public void rechazarEventoSismico() {
+    // Rechazar evento sismico seleccionado
+    public boolean rechazarEventoSismico() {
         
-        // Rechazar el evento sismico seleccionado 
+        // Verificar si el evento sismico ya está en estado Rechazado
+        if (validarEstadoActual(this.eventoSismicoSeleccionadoDTO, "Rechazado")) {
+            return false;
+        }        
+
         EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
         eventoSismicoService.rechazar(this.eventoSismicoSeleccionadoDTO, empleadoDTO);
+
+        // El cambio a estado Rechazado fue realizado con éxito
+        return true;
         
+    }
+
+    // Derivar a experto el evento sismico seleccionado
+    public boolean derivarAExpertoEventoSismicoSeleccionado() {
+
+        // Verificar si el evento sismico ya está en estado DerivadoAExperto
+        if (validarEstadoActual(this.eventoSismicoSeleccionadoDTO, "DerivadoAExperto")) {
+            return false;
+        }
+        
+        // Derivar al experto el evento sismico seleccionado 
+        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
+        eventoSismicoService.derivarAExperto(this.eventoSismicoSeleccionadoDTO, empleadoDTO);
+    
+        // El cambio a estado DerivadoAExperto fue realizado con éxito
+        return true; 
+
     }
     
     // Validar Datos Registrados para el Evento Sismico Seleccionado
@@ -220,6 +252,18 @@ public class GestorRevisionManualService {
         // Los datos son válidos para el evento sismico seleccionado
         return true; 
 
+    }
+
+    // Verificar si el estado actual de une vento sismico es uno determinado
+    public boolean validarEstadoActual(EventoSismicoDTO eventoSismicoSeleccionadoDTO, String estado) {
+
+        // Obtener estado actual de evento sismico
+        if ((eventoSismicoService.obtenerEntidadDesdeDTO(eventoSismicoSeleccionadoDTO)).getEstadoActual().getNombreEstado() == estado) {
+            return true;
+        }
+
+        // El evento sismico no se encuentra en el esatdo buscado
+        return false;
     }
 
     public boolean finCU() {

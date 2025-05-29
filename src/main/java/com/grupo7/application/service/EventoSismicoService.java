@@ -81,6 +81,7 @@ public class EventoSismicoService {
         this.detalleMuestraSismicaService = detalleMuestraSismicaService;
     }
 
+    // Definiendo cambios de estado
     private void cambiarEstado(
         EventoSismicoDTO evento,
         LocalDateTime fechaHora,
@@ -142,6 +143,18 @@ public class EventoSismicoService {
         cambiarEstado(evento, LocalDateTime.now(), estadoConfirmado, responsable);
     }
 
+    /**
+     * Pone el evento en "DerivadoAExperto”.
+     */
+    public void derivarAExperto(EventoSismicoDTO evento, EmpleadoDTO responsable) {
+        EstadoDTO estadoDerivadoAExperto = estadoService.obtenerTodosDTO().stream()
+            .filter(EstadoDTO::sosDerivadoAExperto)
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Estado DerivadoAExperto no encontrado"));
+        cambiarEstado(evento, LocalDateTime.now(), estadoDerivadoAExperto, responsable);
+    }
+
+    
     public List<EventoSismicoBuscadoDTO> esAutoDetectadoOPendienteDeRevision() {
         
         // Lista de Eventos Sismicos Filtrados

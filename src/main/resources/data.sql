@@ -24,7 +24,8 @@ INSERT INTO estado (AMBITO, NOMBRE_ESTADO) VALUES
   ('EventoSismico','BloqueadoEnRevision'),
   ('EventoSismico','Rechazado'),
   ('EventoSismico','Confirmado'),
-  ('EventoSismico','EnRevisionFinal');
+  ('EventoSismico','EnRevisionFinal'),
+  ('EventoSismico','DerivadoAExperto');
 
 INSERT INTO tipo_de_dato (DENOMINACION, NOMBRE_UNIDAD_MEDIDA, VALOR_UMBRAL) VALUES
   ('Aceleración','g',0.01),

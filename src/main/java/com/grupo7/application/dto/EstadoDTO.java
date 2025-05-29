@@ -43,6 +43,10 @@ public class EstadoDTO {
         return this.nombreEstado.equals("RevisionCancelada");
     }
 
+    public boolean sosDerivadoAExperto() {
+        return this.nombreEstado.equals("DerivadoAExperto");
+    }
+
     public boolean sosRechazado() {
         return this.nombreEstado.equals("Rechazado");
     }

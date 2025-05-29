@@ -62,5 +62,13 @@ public class GestorRevisionManualController {
         boolean resultado = gestorRevisionManualService.rechazarEventoSismicoSeleccionado();
         return ResponseEntity.ok(resultado);
     }
+ 
     
+    // derivarAExperto
+    @GetMapping("/derivarAExpertoEventoSismicoSeleccionado")
+    public ResponseEntity<Boolean> derivarAExpertoEventoSismicoSeleccionado() {
+        boolean resultado = gestorRevisionManualService.derivarAExpertoEventoSismicoSeleccionado();
+        return ResponseEntity.ok(resultado);
+    }
+
 }
