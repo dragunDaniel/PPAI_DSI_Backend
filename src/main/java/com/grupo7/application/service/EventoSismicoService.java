@@ -38,15 +38,12 @@ import com.grupo7.application.mapper.MuestraSismicaMapper;
 import com.grupo7.application.mapper.DetalleMuestraSismicaMapper;
 import com.grupo7.application.mapper.SismografoMapper;
 
-<<<<<<< HEAD
 // Services
 import com.grupo7.application.service.CambioEstadoService;
 import com.grupo7.application.service.EstadoService;
 import com.grupo7.application.service.SerieTemporalService;
 import com.grupo7.application.service.DetalleMuestraSismicaService;
 
-=======
->>>>>>> 94e1bc50e1f755a856c5c83850ba678f73fc4667
 @Service
 public class EventoSismicoService {
 
