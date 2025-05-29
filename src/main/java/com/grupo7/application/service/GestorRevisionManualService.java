@@ -94,20 +94,28 @@ public class GestorRevisionManualService {
         return eventosSismicosFiltrados;
     }
 
-    // Ordenar datos principales de eventos sismicos por fecha de ocurrencia
     public List<EventoSismicoDTO> ordenarPorFechaDeOcurrencia(List<EventoSismicoDTO> datosPrincipalesDTO) {
-        // Ordenando por Fecha y Hora de Ocurrencia
         datosPrincipalesDTO.sort((evento1, evento2) ->
                 evento1.getFechaHoraOcurrencia().compareTo(evento2.getFechaHoraOcurrencia())
         );
-        // retornar datos principales ordenados
         return datosPrincipalesDTO;
     }
 
-    public DatosRegistradosDTO tomarEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
+    public DatosRegistradosDTO tomarSeleccionEventoSismico(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
         this.eventoSismicoSeleccionadoDTO = eventoSismicoSeleccionadoDTO;
+        EstadoDTO estadoBloqueadoDTO = null;
+        final LocalDateTime fechaHoraActual = getFechaHoraActual();
 
-        bloquearEventoSismicoSeleccionado(eventoSismicoSeleccionadoDTO);
+
+        for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
+            if (estadoDTO.sosBloqueadoEnRevision()) {
+                estadoBloqueadoDTO = estadoDTO;
+                break;
+            }
+        }
+        
+
+        bloquearEventoSismicoSeleccionado(eventoSismicoSeleccionadoDTO, fechaHoraActual, estadoBloqueadoDTO);
 
         DatosRegistradosDTO datosRegistrados = buscarDatosRegistrados(eventoSismicoSeleccionadoDTO);
 
@@ -124,23 +132,13 @@ public class GestorRevisionManualService {
         return LocalDateTime.now();
     }
 
-    public void bloquearEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
-        EstadoDTO estadoBloqueadoDTO = null; // Inicializando el estado buscado en null
-
-        // Se busca el estado "BloqueadoEnRevision"
-        for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
-            if (estadoDTO.sosBloqueadoEnRevision()) {
-                estadoBloqueadoDTO = estadoDTO;
-                break;
-            }
-        }
-
+    public void bloquearEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO, LocalDateTime fechaHoraActual, EstadoDTO estadoBloqueadoDTO) {
         if (estadoBloqueadoDTO == null) {
             throw new RuntimeException("Estado 'BloqueadoEnRevision' no encontrado en la base de datos.");
         }
 
         EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
-        eventoSismicoService.bloquearPorRevision(this.eventoSismicoSeleccionadoDTO, empleadoDTO, getFechaHoraActual());
+        eventoSismicoService.bloquearPorRevision(this.eventoSismicoSeleccionadoDTO, empleadoDTO, fechaHoraActual);
     }
 
     public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {

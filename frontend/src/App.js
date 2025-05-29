@@ -152,7 +152,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/gestor-revision-manual/tomarEventoSismicoSeleccionado`,
+        `http://localhost:8080/api/gestor-revision-manual/tomarSeleccionEventoSismico`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

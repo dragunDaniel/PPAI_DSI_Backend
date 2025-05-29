@@ -175,16 +175,12 @@ public class EventoSismicoService {
     
     @Transactional(readOnly = true)
     public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
-        
-        // 1. Obtener el evento sismico entidad con todas sus relaciones cargadas (JOIN FETCH)
         EventoSismico eventoSismicoEntidad = obtenerEntidadDesdeDTO(eventoSismicoSeleccionadoDTO);
 
-        // 2. Extraer los nombres directamente de las entidades cargadas
-        String alcanceSismoNombre = (eventoSismicoEntidad.getAlcanceSismo() != null) ? eventoSismicoEntidad.getAlcanceSismo().getNombre() : null;
-        String clasificacionSismoNombre = (eventoSismicoEntidad.getClasificacionSismo() != null) ? eventoSismicoEntidad.getClasificacionSismo().getNombre() : null;
-        String origenGeneracionNombre = (eventoSismicoEntidad.getOrigenGeneracion() != null) ? eventoSismicoEntidad.getOrigenGeneracion().getNombre() : null;
+        String alcanceSismoNombre = eventoSismicoEntidad.getAlcanceSismo().getNombre();
+        String clasificacionSismoNombre = eventoSismicoEntidad.getClasificacionSismo().getNombre();
+        String origenGeneracionNombre = eventoSismicoEntidad.getOrigenGeneracion().getNombre();
 
-        // 3. Procesar las series temporales y construir la lista de SerieTemporalDetalleDTO
         List<SerieTemporalDetalleDTO> seriesTemporalesDetallesDTOs = new ArrayList<>();
 
         if (eventoSismicoEntidad.getSeriesTemporales() != null) {
