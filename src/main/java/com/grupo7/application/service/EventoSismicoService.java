@@ -81,14 +81,12 @@ public class EventoSismicoService {
         this.detalleMuestraSismicaService = detalleMuestraSismicaService;
     }
 
-    // Definiendo cambios de estado
     private void cambiarEstado(
         EventoSismicoDTO evento,
         LocalDateTime fechaHora,
         EstadoDTO estadoDestino,
         EmpleadoDTO responsable
     ) {
-        // 1. Buscar el CambioEstado activo
         CambioEstadoDTO actual = cambioEstadoService.obtenerTodosDTO().stream()
             .filter(ce -> ce.getEventoSismico() != null
                        && ce.getEventoSismico().getId().equals(evento.getId())
@@ -97,11 +95,9 @@ public class EventoSismicoService {
             .orElseThrow(() -> new RuntimeException(
                 "No existe cambio de estado activo para evento " + evento.getId()));
 
-        // 2. Cerrar el activo
         actual.setFechaHoraFin(fechaHora);
         cambioEstadoService.actualizarDesdeDTO(actual.getId(), actual);
 
-        // 3. Abrir el nuevo
         CambioEstadoDTO nuevo = new CambioEstadoDTO();
         nuevo.setEventoSismico(evento);
         nuevo.setFechaHoraInicio(fechaHora);
@@ -109,6 +105,10 @@ public class EventoSismicoService {
         nuevo.setResponsable(responsable);
         cambioEstadoService.crearDesdeDTO(nuevo);
     }
+
+    //Cambios de estado
+
+    //Cambiar estado a rechazado
     public void rechazarEventoSismico(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual) {
         EstadoDTO estadoRechazado = estadoService.obtenerTodosDTO().stream()
             .filter(EstadoDTO::sosRechazado)
@@ -117,60 +117,43 @@ public class EventoSismicoService {
         cambiarEstado(evento, fechaHoraActual, estadoRechazado, responsable);
     }
 
-    public void bloquearPorRevision(EventoSismicoDTO evento, EmpleadoDTO responsable) {
+    //Cambiar estado a BloqueadoEnRevision
+    public void bloquearPorRevision(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual) {
         EstadoDTO estadoBloqueado = estadoService.obtenerTodosDTO().stream()
             .filter(EstadoDTO::sosBloqueadoEnRevision)
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Estado BloqueadoEnRevision no encontrado"));
-        cambiarEstado(evento, LocalDateTime.now(), estadoBloqueado, responsable);
+        cambiarEstado(evento, fechaHoraActual, estadoBloqueado, responsable);
     }
 
-    public void confirmar(EventoSismicoDTO evento, EmpleadoDTO responsable) {
+    //Cambiar estado a confirmado
+    public void confirmar(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual) {
         EstadoDTO estadoConfirmado = estadoService.obtenerTodosDTO().stream()
             .filter(EstadoDTO::sosConfirmado)
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Estado Confirmado no encontrado"));
-        cambiarEstado(evento, LocalDateTime.now(), estadoConfirmado, responsable);
+        cambiarEstado(evento, fechaHoraActual, estadoConfirmado, responsable);
     }
-    public void derivarAExperto(EventoSismicoDTO evento, EmpleadoDTO responsable) {
+
+    //Cambiar estado a DerivadoAExperto
+    public void derivarAExperto(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual) {
         EstadoDTO estadoDerivadoAExperto = estadoService.obtenerTodosDTO().stream()
             .filter(EstadoDTO::sosDerivadoAExperto)
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Estado DerivadoAExperto no encontrado"));
-        cambiarEstado(evento, LocalDateTime.now(), estadoDerivadoAExperto, responsable);
+        cambiarEstado(evento, fechaHoraActual, estadoDerivadoAExperto, responsable);
     }
 
     
-    public List<EventoSismicoBuscadoDTO> esAutoDetectadoOPendienteDeRevision() {
-        
-        // Lista de Eventos Sismicos Filtrados
-        List<EventoSismicoBuscadoDTO> eventosSismicosFiltradosDTO = new ArrayList<>();
+    public boolean esAutoDetectadoOPendienteDeRevision(Long estadoId) {
+        // These methods (sosAutoDetectado, sosPendienteDeRevision) should be in CambioEstadoService
+        return cambioEstadoService.sosAutoDetectado(estadoId) ||
+               cambioEstadoService.sosPendienteDeRevision(estadoId);
+    }
 
-        // Mientras haya eventos sismicos
-        for (EventoSismico eventoSismico : obtenerTodosNoDTO()) {
-            
-            // busco el estado actual para el evento sismico iterado
-            CambioEstadoDTO cambioEstadoActual = cambioEstadoService.obtenerCambioEstadoActual(eventoSismico);
-
-            // Evitando llamar a cambios de estado con id nulo
-            if (cambioEstadoActual == null || cambioEstadoActual.getEstado() == null) {
-                continue;
-            }
-
-            // Verificando si el estado actual es AutoDetectado o PendienteDeRevision
-            if ((cambioEstadoService.sosAutoDetectado(cambioEstadoActual.getEstado().getId())) ||
-            (cambioEstadoService.sosPendienteDeRevision(cambioEstadoActual.getEstado().getId()))) {
-                
-                // Agregando el evento sismico a la lista de eventos sismicos filtrados
-                eventosSismicosFiltradosDTO.add(eventoSismicoBuscadoMapper.toBuscadoDTO(eventoSismico));
-
-
-            } 
-        }
-
-        // Retornando los datos principales (DTO) de los eventos sismicos filtrados
-        return eventosSismicosFiltradosDTO;
-    } 
+    public List<EventoSismico> obtenerTodosLosEventosSismicos() {
+        return eventoSismicoRepository.findAll(); // Assuming you have a repository
+    }
 
     // Obtener datos principales de los eventos sismicos
     public List<EventoSismicoDTO> obtenerDatosPrincipales(List<EventoSismicoBuscadoDTO> buscados) {
