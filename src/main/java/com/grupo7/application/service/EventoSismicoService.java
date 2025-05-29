@@ -249,10 +249,10 @@ public class EventoSismicoService {
                     serieTemporal.getId(),
                     serieTemporal.getCondicionAlarma(),
                     serieTemporal.getFechaHoraRegistros(),
-                    (serieTemporal.getSismografo() != null) ? serieTemporal.getSismografo().getIdentificador() : null,
                     currentCodigoEstacion,
                     muestrasSismicasDTOsForSerie
                 );
+                
                 seriesTemporalesDetallesDTOs.add(serieDetalleDTO);
             }
         }

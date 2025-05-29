@@ -13,25 +13,24 @@ public interface EventoSismicoRepository extends JpaRepository<EventoSismico, Lo
 
     /**
      * Busca un EventoSismico por su ID, cargando eagermente todas las relaciones
-     * necesarias para el DTO de DatosRegistradosDTO en una sola consulta (JOIN FETCH).
-     *
-     * IMPORTANTE: Esta consulta ahora intenta cargar múltiples colecciones de tipo "bag"
-     * (Listas sin orden garantizado), lo que puede causar una MultipleBagFetchException.
-     * La solución recomendada es cambiar las colecciones a Set en las entidades
-     * o usar estrategias de carga diferida con @BatchSize.
+     * necesarias para el DTO de DatosRegistradosDTO en una sola consulta.
+     * Se usa DISTINCT para evitar duplicados en las colecciones mapeadas.
      *
      * @param id El ID del EventoSismico a buscar.
      * @return Un Optional que contiene el EventoSismico si es encontrado, con sus detalles cargados.
      */
-    @Query("SELECT e FROM EventoSismico e " +
-           "LEFT JOIN FETCH e.alcanceSismo " +
-           "LEFT JOIN FETCH e.clasificacionSismo " +
-           "LEFT JOIN FETCH e.origenGeneracion " +
-           "LEFT JOIN FETCH e.seriesTemporales st " + // Colección 1 (List/Set)
-           "LEFT JOIN FETCH st.sismografo s " +
-           "LEFT JOIN FETCH st.muestrasSismicas ms " + // Colección 2 (List/Set) - Nueva relación
-           "LEFT JOIN FETCH ms.detallesMuestra dm " + // Colección 3 (List/Set)
-           "WHERE e.id = :id")
+    @Query("""
+        SELECT DISTINCT e
+          FROM EventoSismico e
+          LEFT JOIN FETCH e.alcanceSismo
+          LEFT JOIN FETCH e.clasificacionSismo
+          LEFT JOIN FETCH e.origenGeneracion
+          LEFT JOIN FETCH e.seriesTemporales st
+          LEFT JOIN FETCH st.sismografo s
+          LEFT JOIN FETCH st.muestrasSismicas ms
+          LEFT JOIN FETCH ms.detallesMuestra dm
+         WHERE e.id = :id
+    """)
     Optional<EventoSismico> findByIdWithDetails(@Param("id") Long id);
 
 }

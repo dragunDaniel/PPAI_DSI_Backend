@@ -140,9 +140,11 @@ SET @serie_id_3 = LAST_INSERT_ID();
   -- MuestraSismica for SerieTemporal 3
   INSERT INTO muestra_sismica (FECHA_HORA_MUESTRA, ID_SERIE) VALUES ('2025-05-28 10:00:01', @serie_id_3);
   SET @muestra_id_s3_m1 = LAST_INSERT_ID();
+  
     -- DetalleMuestraSismica for MuestraSismica @muestra_id_s3_m1
+    -- Cambiamos ambos a ID_TIPO = 2 (Velocidad) para asegurar denominación no nula
     INSERT INTO detalle_muestra_sismica (ID_TIPO, VALOR, ID_MUESTRA_SISMICA) VALUES
-      (1, 0.030, @muestra_id_s3_m1),
+      (2, 0.030, @muestra_id_s3_m1),
       (2, 0.006, @muestra_id_s3_m1);
 
 -- SerieTemporal 4 (linked to EventoSismico ID 2, using a different Sismografo/Estacion)

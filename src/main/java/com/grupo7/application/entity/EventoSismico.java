@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 @Entity
 @Table(name = "evento_sismico")
@@ -55,9 +57,8 @@ public class EventoSismico {
     @JoinColumn(name = "ORIGEN_GENERACION_ID")
     private OrigenDeGeneracion origenGeneracion;
     
-    // bi-direccional hacia SerieTemporal
-    @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SerieTemporal> seriesTemporales = new ArrayList<>();
+    @OneToMany(mappedBy="eventoSismico", cascade=CascadeType.ALL, orphanRemoval=true)
+    private Set<SerieTemporal> seriesTemporales = new HashSet<>();
 
     // Constructor por defecto
     public EventoSismico() {
@@ -75,7 +76,7 @@ public class EventoSismico {
     }
     
     
-    public List<SerieTemporal> getSeriesTemporales() { return seriesTemporales; }
+    public Set<SerieTemporal> getSeriesTemporales() { return seriesTemporales; }
 
     // método auxiliar para mantener la consistencia
     public void agregarSerieTemporal(SerieTemporal serie) {
