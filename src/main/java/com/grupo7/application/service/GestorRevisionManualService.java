@@ -144,7 +144,9 @@ public class GestorRevisionManualService {
         }
 
         // Bloquear el estado del evento sismico por revision
-        eventoSismicoService.bloquearPorRevision(eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoBloqueadoDTO);    
+        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual(); // O el username actual
+        eventoSismicoService.bloquearPorRevision(this.eventoSismicoSeleccionadoDTO, empleadoDTO);
+
     }
 
     public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
@@ -156,10 +158,6 @@ public class GestorRevisionManualService {
         return datosRegistradosDTO;
     }
 
-    /**
-     * Orders a list of SerieTemporalDetalleDTO by the 'codigoEstacion' field.
-     * @param seriesTemporalesDetalleDTOs The list to be sorted.
-     */
     private void ordenarSeriesTemporalesPorCodigoEstacion(List<SerieTemporalDetalleDTO> seriesTemporalesDetalleDTOs) {
         if (seriesTemporalesDetalleDTOs != null) {
             seriesTemporalesDetalleDTOs.sort(Comparator.comparing(SerieTemporalDetalleDTO::getCodigoEstacion,
@@ -167,7 +165,7 @@ public class GestorRevisionManualService {
         }
     }
 
-    // RECHAZO DE EVENTO SISMICO SELECCIONADO
+    // Rechazar evento sismico selecciondao
     public boolean rechazarEventoSismicoSeleccionado() {
         
         if (validarDatosSismicos() == false) {
@@ -177,14 +175,12 @@ public class GestorRevisionManualService {
         // Actualizar el estado del evento sismico seleccionado a rechazado
         rechazarEventoSismico();
 
-        
         // llamar a fin de caso de uso
         return finCU();
-
     }
 
     
-    // CONFIRMACIÓN DE EVENTO SISMICO SELECCIONADO
+    // Confirmación de evento sismico seleccionado
     public boolean confirmarEventoSismicoSeleccionado() {
         
         if (validarDatosSismicos() == false) {
@@ -200,6 +196,23 @@ public class GestorRevisionManualService {
 
     }
 
+    // Confimrar evento sismico seleccionado
+    public void confirmarEventoSismico() {
+        
+        // Confirmar el evento sismico seleccionado 
+        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
+        eventoSismicoService.confirmar(this.eventoSismicoSeleccionadoDTO, empleadoDTO);
+    }
+
+
+    public void rechazarEventoSismico() {
+        
+        // Rechazar el evento sismico seleccionado 
+        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
+        eventoSismicoService.rechazar(this.eventoSismicoSeleccionadoDTO, empleadoDTO);
+        
+    }
+    
     // Validar Datos Registrados para el Evento Sismico Seleccionado
     private boolean validarDatosSismicos() {
 
@@ -221,70 +234,7 @@ public class GestorRevisionManualService {
 
     }
 
-    
-    public void confirmarEventoSismico() {
-        
-        EstadoDTO estadoConfirmadoDTO = null; 
-
-        // Se busca el estado "Confirmado"
-        for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
-            if (estadoDTO.sosConfirmado()) {
-                estadoConfirmadoDTO = estadoDTO;
-                break;
-            }
-        }
-
-        // Revisando que efectivamente el estado confirmado haya sido encontrado en la base de datos
-        if (estadoConfirmadoDTO == null) {
-            throw new RuntimeException("Estado 'Confirmado' no encontrado en la base de datos.");
-        }
-
-        // Obteniendo al usaurio logueado con id 1
-        UsuarioDTO usuarioLogueadoDTO = usuarioService.obtenerUsuarioDTO(1L);
-
-        // Obteniendo al responsable de inspeccion (empleado logueado como usuario responsable de este cambio de esatdo)
-        EmpleadoDTO responsableDeInspeccionDTO = usuarioService.obtenerEmpleado(usuarioLogueadoDTO.getIdUsuario());
-
-        System.out.println("d");
-
-        // Confirmar el evento sismico seleccionado 
-        eventoSismicoService.confirmar(this.eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoConfirmadoDTO, responsableDeInspeccionDTO);
-
-    }
-
-
-    public void rechazarEventoSismico() {
-        
-        EstadoDTO estadoRechazadoDTO = null; 
-
-        // Se busca el estado "Rechazado"
-        for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
-            if (estadoDTO.sosRechazado()) {
-                estadoRechazadoDTO = estadoDTO;
-                break;
-            }
-        }
-
-        // Revisando que efectivamente el estado rechazado haya sido encontrado en la base de datos
-        if (estadoRechazadoDTO == null) {
-            throw new RuntimeException("Estado 'Rechazado' no encontrado en la base de datos.");
-        }
-
-        // Obteniendo al usaurio logueado con id 1
-        UsuarioDTO usuarioLogueadoDTO = usuarioService.obtenerUsuarioDTO(1L);
-
-        // Obteniendo al responsable de inspeccion (empleado logueado como usuario responsable de este cambio de esatdo)
-        EmpleadoDTO responsableDeInspeccionDTO = usuarioService.obtenerEmpleado(usuarioLogueadoDTO.getIdUsuario());
-
-        System.out.println("d");
-
-        // Rechazar el evento sismico seleccionado 
-        eventoSismicoService.rechazar(this.eventoSismicoSeleccionadoDTO, obtenerHoraActual(), estadoRechazadoDTO, responsableDeInspeccionDTO);
-
-    }
-
     public boolean finCU() {
         return true; 
     }
-
 }

@@ -35,6 +35,16 @@ public class UsuarioService {
         this.empleadoMapper = empleadoMapper;
     }
 
+    public EmpleadoDTO obtenerEmpleadoActual() {
+        Usuario usuario = usuarioRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Empleado empleado = usuario.getEmpleado();
+        if (empleado == null) {
+            throw new RuntimeException("El usuario no tiene empleado asociado");
+        }
+        return empleadoMapper.toDTO(empleado);
+    }
+
     /**
      * Devuelve el EmpleadoDTO asociado al usuario.
      *

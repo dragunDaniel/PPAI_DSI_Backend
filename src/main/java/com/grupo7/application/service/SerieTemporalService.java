@@ -80,11 +80,12 @@ public class SerieTemporalService {
 
                 if (muestraSismicaEntity.getDetallesMuestra() != null) {
                     for (DetalleMuestraSismica detalleMuestraSismicaEntity : muestraSismicaEntity.getDetallesMuestra()) {
-                        
                     
                         // Obteniendo la denominacion
                         String denominacion = detalleMuestraSismicaService.getDatos(detalleMuestraSismicaEntity.getId());
                         
+                        System.out.println("CLAVE2 LA DENOMINACION ES:" + denominacion);
+
                         // Si la denominacion es valida
                         if (denominacion != null) {
                             
@@ -98,11 +99,13 @@ public class SerieTemporalService {
                 }
 
                 muestraSismicaDTO.setDetallesMuestra(detallesMuestraDTOs);
-                
+             
+                System.out.println("aca aca" + muestraSismicaDTO.getDetallesMuestra());
+
                 muestrasSismicasDTOs.add(muestraSismicaDTO);
             }
         }
-        
+
         serieTemporalDTO.setMuestrasSismicas(muestrasSismicasDTOs);
 
         return serieTemporalDTO;

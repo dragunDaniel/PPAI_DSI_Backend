@@ -18,6 +18,8 @@ public class EmpleadoDTO {
         this.mail = mail;
         this.telefono = telefono;
     }
+    
+    // Setters y Getters
 
     public Long getId() {
         return id;
@@ -59,3 +61,5 @@ public class EmpleadoDTO {
         this.telefono = telefono;
     }
 }
+
+

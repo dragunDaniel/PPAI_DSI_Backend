@@ -69,6 +69,8 @@ public class MuestraSismicaService {
                 // obteniendo la denominacion del tipo de dato 
                 String denominacion = detalleMuestraSismicaService.getDatos(detalleMuestraSismicaIterada.getId());
                 
+                System.out.println("CLAVECLAVE LA DENOMINACION ES: " + denominacion);
+
                 // Si la denominacion es correcta, agregar a la lista de datos registrados 
                 if (denominacion != null) {
 
