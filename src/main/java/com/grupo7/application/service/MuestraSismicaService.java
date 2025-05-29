@@ -3,12 +3,14 @@ package com.grupo7.application.service;
 // Dependencies
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // Added for @Transactional
 import java.util.List;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 // Entities
 import com.grupo7.application.entity.MuestraSismica;
-import com.grupo7.application.entity.DetalleMuestraSismica; 
+import com.grupo7.application.entity.DetalleMuestraSismica;
 
 // Repositories
 import com.grupo7.application.repository.MuestraSismicaRepository;
@@ -20,8 +22,6 @@ import com.grupo7.application.dto.MuestraSismicaDTO;
 // Mappers
 import com.grupo7.application.mapper.DetalleMuestraSismicaMapper;
 import com.grupo7.application.mapper.MuestraSismicaMapper;
-
-// Services 
 
 @Service
 public class MuestraSismicaService {
@@ -40,53 +40,33 @@ public class MuestraSismicaService {
         this.detalleMuestraSismicaMapper = detalleMuestraSismicaMapper;
         this.detalleMuestraSismicaService = detalleMuestraSismicaService;
     }
-
-    /**
-     * Obtiene los detalles de muestra sísmica válidos para una MuestraSismica específica.
-     * Se espera que la MuestraSismica ahora tenga una lista de DetalleMuestraSismica.
-     *
-     * @param muestraSismicaId El ID de la MuestraSismica de la cual se quieren obtener los detalles.
-     * @return Una lista de DetalleMuestraSismica que cumplen con la condición de validez.
-     */
-    public List<DetalleMuestraSismicaDTO> getDatos(Long muestraSismicaId) {
-        // Definir la lista de Detalles de la Muestra Sísmica Iterada
-        List<DetalleMuestraSismicaDTO> detallesValidos = new ArrayList<>(); 
-
+    
+    @Transactional(readOnly = true)
+    public MuestraSismicaDTO getDatos(Long muestraSismicaId) {
         // Buscar la Muestra Sísmica por su Id
-        MuestraSismica muestraSismica = obtenerPorId(muestraSismicaId);
+        MuestraSismica muestraSismicaEntity = obtenerPorId(muestraSismicaId);
 
-        // Verificar si la MuestraSismica existe y tiene detalles asociados
-        if (muestraSismica != null && muestraSismica.getDetallesMuestra() != null) {
-            // Iterar sobre los detalles de muestra sísmica directamente asociados a esta MuestraSismica
-            for (DetalleMuestraSismica detalleMuestraSismicaIterada : muestraSismica.getDetallesMuestra()) {
-
-                // Verificar que dicho detalle esté asociado a cualquiera de los tipos de datos buscados
-                // Asumiendo que detalleMuestraSismicaService.getDatos(id) es un método de validación/filtro
-                
-                // obteniendo la denominacion del tipo de dato 
-                String denominacion = detalleMuestraSismicaService.getDatos(detalleMuestraSismicaIterada.getId());
-                
-                System.out.println("CLAVECLAVE LA DENOMINACION ES: " + denominacion);
-
-                // Si la denominacion es correcta, agregar a la lista de datos registrados 
-                if (denominacion != null) {
-
-                    // Agregar la denominacion al detalle de muestra sismica y agregar a la lista de datos validos
-                    // CORRECCIÓN en MuestraSismicaService.getDatos(...)
-                    DetalleMuestraSismicaDTO dto = detalleMuestraSismicaMapper.toDTO(detalleMuestraSismicaIterada);
-                    dto.setDenominacion(denominacion);
-                    detallesValidos.add(dto);
-
-                }
-            }
+        if (muestraSismicaEntity == null) {
+            return null;
         }
-        
-        // Si la lista no está vacía, se retorna la lista con los detalles válidos 
-        if (!detallesValidos.isEmpty()) {
-            return detallesValidos;
-        } else {
-            return List.of(); // Retorna una lista inmutable vacía si no hay detalles válidos
+
+        List<DetalleMuestraSismicaDTO> detallesMuestraDTOsForMuestra = new ArrayList<>();
+
+        if (muestraSismicaEntity.getDetallesMuestra() != null) {
+            detallesMuestraDTOsForMuestra = muestraSismicaEntity.getDetallesMuestra().stream()
+                // Call the new overloaded getDatos method in DetalleMuestraSismicaService
+                .map(detalleMuestraSismicaService::getDatos)
+                // Filter out details if their denomination is null (as per original logic)
+                .filter(dto -> dto != null && dto.getDenominacion() != null)
+                .collect(Collectors.toList());
         }
+
+        // Create MuestraSismicaDTO with its details
+        return new MuestraSismicaDTO(
+            muestraSismicaEntity.getId(),
+            muestraSismicaEntity.getFechaHoraMuestra(),
+            detallesMuestraDTOsForMuestra
+        );
     }
 
     /**
@@ -95,15 +75,17 @@ public class MuestraSismicaService {
      * @return La entidad MuestraSismica.
      * @throws RuntimeException si la MuestraSismica no es encontrada.
      */
+    @Transactional(readOnly = true)
     public MuestraSismica obtenerPorId(Long id) {
         return muestraSismicaRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Muestra no encontrada: " + id));
-    }   
+    }
 
     /**
      * Obtiene todas las entidades MuestraSismica sin convertirlas a DTOs.
      * @return Una lista de entidades MuestraSismica.
      */
+    @Transactional(readOnly = true)
     public List<MuestraSismica> obtenerTodosNoDTO() {
         List<MuestraSismica> entidades = muestraSismicaRepository.findAll();
         return entidades;
@@ -113,6 +95,7 @@ public class MuestraSismicaService {
      * Obtiene todas las MuestraSismica convertidas a DTOs.
      * @return Una lista de MuestraSismicaDTO.
      */
+    @Transactional(readOnly = true)
     public List<MuestraSismicaDTO> obtenerTodosDTO() {
         return muestraSismicaRepository.findAll()
             .stream()
@@ -125,12 +108,13 @@ public class MuestraSismicaService {
      * @param dto El DTO de la MuestraSismica a crear.
      * @return El DTO de la MuestraSismica guardada.
      */
+    @Transactional
     public MuestraSismicaDTO crearDesdeDTO(MuestraSismicaDTO dto) {
         MuestraSismica entidad = muestraSismicaMapper.toEntity(dto);
         MuestraSismica guardado = muestraSismicaRepository.save(entidad);
         return muestraSismicaMapper.toDTO(guardado);
     }
-    
+
     /**
      * Actualiza una MuestraSismica existente a partir de un DTO.
      * @param id El ID de la MuestraSismica a actualizar.
@@ -138,6 +122,7 @@ public class MuestraSismicaService {
      * @return El DTO de la MuestraSismica actualizada.
      * @throws RuntimeException si la MuestraSismica no es encontrada.
      */
+    @Transactional
     public MuestraSismicaDTO actualizarDesdeDTO(Long id, MuestraSismicaDTO dto) {
         return muestraSismicaRepository.findById(id)
             .map(existing -> {

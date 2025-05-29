@@ -175,63 +175,24 @@ public class EventoSismicoService {
     
     @Transactional(readOnly = true)
     public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
+    
+        // 1. Obtener el evento sismico entidad con todas sus relaciones cargadas (JOIN FETCH)
         EventoSismico eventoSismicoEntidad = obtenerEntidadDesdeDTO(eventoSismicoSeleccionadoDTO);
-
-        String alcanceSismoNombre = eventoSismicoEntidad.getAlcanceSismo().getNombre();
-        String clasificacionSismoNombre = eventoSismicoEntidad.getClasificacionSismo().getNombre();
-        String origenGeneracionNombre = eventoSismicoEntidad.getOrigenGeneracion().getNombre();
-
+    
+        // 2. Extraer los nombres directamente de las entidades cargadas
+        String alcanceSismoNombre = (eventoSismicoEntidad.getAlcanceSismo() != null) ? eventoSismicoEntidad.getAlcanceSismo().getNombre() : null;
+        String clasificacionSismoNombre = (eventoSismicoEntidad.getClasificacionSismo() != null) ? eventoSismicoEntidad.getClasificacionSismo().getNombre() : null;
+        String origenGeneracionNombre = (eventoSismicoEntidad.getOrigenGeneracion() != null) ? eventoSismicoEntidad.getOrigenGeneracion().getNombre() : null;
+    
+        // 3. Process series temporales using the new method in SerieTemporalService
         List<SerieTemporalDetalleDTO> seriesTemporalesDetallesDTOs = new ArrayList<>();
-
+    
         if (eventoSismicoEntidad.getSeriesTemporales() != null) {
-            for (SerieTemporal serieTemporal : eventoSismicoEntidad.getSeriesTemporales()) {
-                List<MuestraSismicaDTO> muestrasSismicasDTOsForSerie = new ArrayList<>();
-
-                if (serieTemporal.getMuestrasSismicas() != null) {
-                    for (MuestraSismica muestraSismica : serieTemporal.getMuestrasSismicas()) {
-                        List<DetalleMuestraSismicaDTO> detallesMuestraDTOsForMuestra = new ArrayList<>();
-
-                        if (muestraSismica.getDetallesMuestra() != null) {
-                            for (DetalleMuestraSismica detalleMuestraSismica : muestraSismica.getDetallesMuestra()) {
-                                
-                                // Obteniendo la denominacion
-                                String denominacion = detalleMuestraSismicaService.getDatos(detalleMuestraSismica.getId());
-                                
-                                // Asignando la denominacion al detalle al DTO del detalle de la muestra sismica 
-                                DetalleMuestraSismicaDTO detalleMuestraSisimcaDTO = detalleMuestraSismicaMapper.toDTO(detalleMuestraSismica);
-                                detalleMuestraSisimcaDTO.setDenominacion(denominacion);
-
-                                // Añadiendo el dto del detalle de la muestra simsica al listado de datos válidos
-                                detallesMuestraDTOsForMuestra.add(detalleMuestraSisimcaDTO);
-                                
-                            }
-                        }
-                        MuestraSismicaDTO muestraSismicaDTO = new MuestraSismicaDTO(
-                            muestraSismica.getId(),
-                            muestraSismica.getFechaHoraMuestra(),
-                            detallesMuestraDTOsForMuestra
-                        );
-                        muestrasSismicasDTOsForSerie.add(muestraSismicaDTO);
-                    }
-                }
-
-                String currentCodigoEstacion = null;
-                if (serieTemporal.getSismografo() != null && serieTemporal.getSismografo().getEstacionSismologica() != null) {
-                    currentCodigoEstacion = serieTemporal.getSismografo().getEstacionSismologica().getCodigoEstacion();
-                }
-
-                SerieTemporalDetalleDTO serieDetalleDTO = new SerieTemporalDetalleDTO(
-                    serieTemporal.getId(),
-                    serieTemporal.getCondicionAlarma(),
-                    serieTemporal.getFechaHoraRegistros(),
-                    currentCodigoEstacion,
-                    muestrasSismicasDTOsForSerie
-                );
-                
-                seriesTemporalesDetallesDTOs.add(serieDetalleDTO);
-            }
+            seriesTemporalesDetallesDTOs = eventoSismicoEntidad.getSeriesTemporales().stream()
+                .map(serieTemporalService::getDatos) // Calls the new getDatos method in SerieTemporalService
+                .collect(Collectors.toList());
         }
-
+    
         return new DatosRegistradosDTO(alcanceSismoNombre, clasificacionSismoNombre, origenGeneracionNombre, seriesTemporalesDetallesDTOs);
     }
 

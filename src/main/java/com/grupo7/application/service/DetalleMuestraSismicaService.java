@@ -3,10 +3,12 @@ package com.grupo7.application.service;
 // Dependencies
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // Import Transactional
 import java.util.List;
+import java.util.ArrayList; // Added for new method if needed
 
 // Entities
-import com.grupo7.application.entity.DetalleMuestraSismica; 
+import com.grupo7.application.entity.DetalleMuestraSismica;
 
 // Repositories
 import com.grupo7.application.repository.DetalleMuestraSismicaRepository;
@@ -19,59 +21,62 @@ import com.grupo7.application.dto.DetalleMuestraSismicaDTO;
 import com.grupo7.application.mapper.TipoDeDatoMapper;
 import com.grupo7.application.mapper.DetalleMuestraSismicaMapper;
 
-// Services 
-
 @Service
 public class DetalleMuestraSismicaService {
 
     private final DetalleMuestraSismicaRepository detalleMuestraSismicaRepository;
     private final DetalleMuestraSismicaMapper detalleMuestraSismicaMapper;
     private final TipoDeDatoMapper tipoDeDatoMapper;
+    private final TipoDeDatoService tipoDeDatoService; // Added for completeness in constructor, as it was in original
 
     @Autowired
     public DetalleMuestraSismicaService(DetalleMuestraSismicaRepository detalleMuestraSismicaRepository, DetalleMuestraSismicaMapper detalleMuestraSismicaMapper,
-        TipoDeDatoService tipoDeDatoService, TipoDeDatoMapper tipoDeDatoMapper) {
+                                        TipoDeDatoService tipoDeDatoService, TipoDeDatoMapper tipoDeDatoMapper) {
         this.detalleMuestraSismicaRepository = detalleMuestraSismicaRepository;
         this.detalleMuestraSismicaMapper = detalleMuestraSismicaMapper;
+        this.tipoDeDatoService = tipoDeDatoService; // Assign it
         this.tipoDeDatoMapper = tipoDeDatoMapper;
     }
+    
+    @Transactional(readOnly = true)
+    public DetalleMuestraSismicaDTO getDatos(DetalleMuestraSismica detalleMuestraSismicaEntity) {
+        if (detalleMuestraSismicaEntity == null) {
+            return null;
+        }
 
-    // Obtener Datos (Muetra Sismicas para una Serie Temporal)
-    public String getDatos(Long detalleMuestraSismicaIteradaId) {
-        
-        // Obteniendo el Detalle de Muestra Sismica a partir del Id
-        DetalleMuestraSismica detalleMuestraSismicaIterada = obtenerPorId(detalleMuestraSismicaIteradaId);
+        // Directly get the TipoDeDato from the entity
+        TipoDeDatoDTO tipoDTO = tipoDeDatoMapper.toDTO(detalleMuestraSismicaEntity.getTipoDeDato());
 
-        // Obteniendo el Tipo de Dato asociado al detalle de la muestra sismica
-        TipoDeDatoDTO tipoDTO = tipoDeDatoMapper.toDTO(detalleMuestraSismicaIterada.getTipoDeDato());
-
-        // Verificando que el tipo de dato asociado al detalle de muestra sismica sea el buscado
+        String denominacion = null;
         if (tipoDTO.esTuDenominacion("Velocidad")) {
-            return "Velocidad";
+            denominacion = "Velocidad";
+        } else if (tipoDTO.esTuDenominacion("Longitud")) {
+            denominacion = "Longitud";
+        } else if (tipoDTO.esTuDenominacion("Frecuencia")) {
+            denominacion = "Frecuencia";
         }
-        if (tipoDTO.esTuDenominacion("Longitud")) {
-            return "Longitud";
-        }
-        if (tipoDTO.esTuDenominacion("Frecuencia")) {
-            return "Frecuencia";
-        }
-        
-        // Si no es de los datos buscados retornar null
-        return null;
+
+        // Map the entity to DTO and set the denomination
+        DetalleMuestraSismicaDTO detalleMuestraSisimcaDTO = detalleMuestraSismicaMapper.toDTO(detalleMuestraSismicaEntity);
+        detalleMuestraSisimcaDTO.setDenominacion(denominacion);
+
+        return detalleMuestraSisimcaDTO;
     }
 
 
+    @Transactional(readOnly = true)
     public DetalleMuestraSismica obtenerPorId(Long id) {
         return detalleMuestraSismicaRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Detalle no encontrado: " + id));
     }
 
-
+    @Transactional(readOnly = true)
     public List<DetalleMuestraSismica> obtenerTodosNoDTO() {
         List<DetalleMuestraSismica> entidades = detalleMuestraSismicaRepository.findAll();
         return entidades;
     }
 
+    @Transactional(readOnly = true)
     public List<DetalleMuestraSismicaDTO> obtenerTodosDTO() {
         return detalleMuestraSismicaRepository.findAll()
             .stream()
@@ -79,12 +84,14 @@ public class DetalleMuestraSismicaService {
             .toList();
     }
 
+    @Transactional
     public DetalleMuestraSismicaDTO crearDesdeDTO(DetalleMuestraSismicaDTO dto) {
         DetalleMuestraSismica entidad = detalleMuestraSismicaMapper.toEntity(dto);
         DetalleMuestraSismica guardado = detalleMuestraSismicaRepository.save(entidad);
         return detalleMuestraSismicaMapper.toDTO(guardado);
     }
-    
+
+    @Transactional
     public DetalleMuestraSismicaDTO actualizarDesdeDTO(Long id, DetalleMuestraSismicaDTO dto) {
         return detalleMuestraSismicaRepository.findById(id)
             .map(existing -> {
@@ -95,4 +102,4 @@ public class DetalleMuestraSismicaService {
             })
             .orElseThrow(() -> new RuntimeException("eventoSismico no encontrado con id: " + id));
     }
-}    
+}

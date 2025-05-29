@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.stream.Collectors; // Added for stream operations
 
 // Entities
 import com.grupo7.application.entity.SerieTemporal;
@@ -19,6 +20,7 @@ import com.grupo7.application.repository.SerieTemporalRepository;
 import com.grupo7.application.dto.SerieTemporalDTO;
 import com.grupo7.application.dto.MuestraSismicaDTO;
 import com.grupo7.application.dto.DetalleMuestraSismicaDTO;
+import com.grupo7.application.dto.SerieTemporalDetalleDTO; // Import the detailed DTO
 
 // Mappers
 import com.grupo7.application.mapper.SerieTemporalMapper;
@@ -30,8 +32,9 @@ public class SerieTemporalService {
 
     private final SerieTemporalRepository serieTemporalRepository;
     private final SerieTemporalMapper serieTemporalMapper;
-    private final MuestraSismicaService muestraSismicaService; // Keep if its getDatos method is for validation
-    private final DetalleMuestraSismicaService detalleMuestraSismicaService; // Keep if its getDatos method is for validation
+    // Assuming MuestraSismicaService and DetalleMuestraSismicaService are needed for their getDatos methods
+    private final MuestraSismicaService muestraSismicaService;
+    private final DetalleMuestraSismicaService detalleMuestraSismicaService;
     private final MuestraSismicaMapper muestraSismicaMapper;
     private final DetalleMuestraSismicaMapper detalleMuestraSismicaMapper;
 
@@ -51,56 +54,36 @@ public class SerieTemporalService {
     }
 
 
-    @Transactional(readOnly = true) 
-    public SerieTemporalDTO getDatos(SerieTemporal serieTemporalEntity) {
-        
+    @Transactional(readOnly = true)
+    public SerieTemporalDetalleDTO getDatos(SerieTemporal serieTemporalEntity) {
+
         if (serieTemporalEntity == null) {
             return null;
         }
 
-        SerieTemporalDTO serieTemporalDTO = serieTemporalMapper.toDTO(serieTemporalEntity);
-
-        List<MuestraSismicaDTO> muestrasSismicasDTOs = new ArrayList<>();
+        List<MuestraSismicaDTO> muestrasSismicasDTOsForSerie = new ArrayList<>();
 
         if (serieTemporalEntity.getMuestrasSismicas() != null) {
-
-            for (MuestraSismica muestraSismicaEntity : serieTemporalEntity.getMuestrasSismicas()) {
-
-                MuestraSismicaDTO muestraSismicaDTO = muestraSismicaMapper.toDTO(muestraSismicaEntity);
-
-                List<DetalleMuestraSismicaDTO> detallesMuestraDTOs = new ArrayList<>();
-
-                if (muestraSismicaEntity.getDetallesMuestra() != null) {
-                    for (DetalleMuestraSismica detalleMuestraSismicaEntity : muestraSismicaEntity.getDetallesMuestra()) {
-                    
-                        // Obteniendo la denominacion
-                        String denominacion = detalleMuestraSismicaService.getDatos(detalleMuestraSismicaEntity.getId());
-                        
-                        System.out.println("CLAVE2 LA DENOMINACION ES:" + denominacion);
-
-                        // Si la denominacion es valida
-                        if (denominacion != null) {
-                            
-                            // Se Mapea a DTO y se le setea al mismo la denominacion
-                            DetalleMuestraSismicaDTO detalleDto = detalleMuestraSismicaMapper.toDTO(detalleMuestraSismicaEntity);
-                            detalleDto.setDenominacion(denominacion);
-                            detallesMuestraDTOs.add(detalleDto);
-                            
-                        }
-                    }
-                }
-
-                muestraSismicaDTO.setDetallesMuestra(detallesMuestraDTOs);
-             
-                System.out.println("aca aca" + muestraSismicaDTO.getDetallesMuestra());
-
-                muestrasSismicasDTOs.add(muestraSismicaDTO);
-            }
+            muestrasSismicasDTOsForSerie = serieTemporalEntity.getMuestrasSismicas().stream()
+                // Now calling the updated getDatos method from MuestraSismicaService
+                .map(muestraSismicaEntity -> muestraSismicaService.getDatos(muestraSismicaEntity.getId()))
+                .collect(Collectors.toList());
         }
 
-        serieTemporalDTO.setMuestrasSismicas(muestrasSismicasDTOs);
+        String currentCodigoEstacion = null;
+        if (serieTemporalEntity.getSismografo() != null && serieTemporalEntity.getSismografo().getEstacionSismologica() != null) {
+            currentCodigoEstacion = serieTemporalEntity.getSismografo().getEstacionSismologica().getCodigoEstacion();
+        }
 
-        return serieTemporalDTO;
+        SerieTemporalDetalleDTO serieDetalleDTO = new SerieTemporalDetalleDTO(
+            serieTemporalEntity.getId(),
+            serieTemporalEntity.getCondicionAlarma(),
+            serieTemporalEntity.getFechaHoraRegistros(),
+            currentCodigoEstacion,
+            muestrasSismicasDTOsForSerie
+        );
+
+        return serieDetalleDTO;
     }
 
 
@@ -125,11 +108,7 @@ public class SerieTemporalService {
         // handles the nested mapping or call the new method.
         return serieTemporalRepository.findAll()
             .stream()
-            // To ensure full hierarchy, you might need to fetch entities with joins
-            // and then map them using the new hierarchical method.
-            // For simplicity here, assuming mapper is smart or entities are fetched
-            // or you explicitly call the hierarchical method.
-            .map(entity -> getDatos(entity)) // Use the new method to get full hierarchy
+            .map(entity -> serieTemporalMapper.toDTO(entity)) // Assuming serieTemporalMapper.toDTO can handle basic mapping
             .toList();
     }
 
@@ -143,7 +122,7 @@ public class SerieTemporalService {
         SerieTemporal guardado = serieTemporalRepository.save(entidad);
         return serieTemporalMapper.toDTO(guardado); // Or getSerieTemporalWithFullHierarchy(guardado) if full DTO is needed
     }
-    
+
     @Transactional
     public SerieTemporalDTO actualizarDesdeDTO(Long id, SerieTemporalDTO dto) {
         return serieTemporalRepository.findById(id)
