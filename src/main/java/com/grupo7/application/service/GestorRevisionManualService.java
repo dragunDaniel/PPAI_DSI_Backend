@@ -88,7 +88,6 @@ public class GestorRevisionManualService {
             }
 
             if (eventoSismicoService.esAutoDetectadoOPendienteDeRevision(cambioEstadoActual.getEstado().getId())) {
-                // This is the line that was throwing the NullPointerException
                 eventosSismicosFiltrados.add(eventoSismicoBuscadoMapper.toBuscadoDTO(eventoSismico));
             }
         }
