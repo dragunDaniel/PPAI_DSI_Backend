@@ -109,21 +109,14 @@ public class EventoSismicoService {
         nuevo.setResponsable(responsable);
         cambioEstadoService.crearDesdeDTO(nuevo);
     }
-
-    /**
-     * Pone el evento en “Rechazado”.
-     */
-    public void rechazar(EventoSismicoDTO evento, EmpleadoDTO responsable) {
+    public void rechazarEventoSismico(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual) {
         EstadoDTO estadoRechazado = estadoService.obtenerTodosDTO().stream()
             .filter(EstadoDTO::sosRechazado)
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Estado Rechazado no encontrado"));
-        cambiarEstado(evento, LocalDateTime.now(), estadoRechazado, responsable);
+        cambiarEstado(evento, fechaHoraActual, estadoRechazado, responsable);
     }
 
-    /**
-     * Pone el evento en “BloqueadoEnRevision”.
-     */
     public void bloquearPorRevision(EventoSismicoDTO evento, EmpleadoDTO responsable) {
         EstadoDTO estadoBloqueado = estadoService.obtenerTodosDTO().stream()
             .filter(EstadoDTO::sosBloqueadoEnRevision)
@@ -132,9 +125,6 @@ public class EventoSismicoService {
         cambiarEstado(evento, LocalDateTime.now(), estadoBloqueado, responsable);
     }
 
-    /**
-     * Pone el evento en “Confirmado”.
-     */
     public void confirmar(EventoSismicoDTO evento, EmpleadoDTO responsable) {
         EstadoDTO estadoConfirmado = estadoService.obtenerTodosDTO().stream()
             .filter(EstadoDTO::sosConfirmado)
@@ -142,10 +132,6 @@ public class EventoSismicoService {
             .orElseThrow(() -> new RuntimeException("Estado Confirmado no encontrado"));
         cambiarEstado(evento, LocalDateTime.now(), estadoConfirmado, responsable);
     }
-
-    /**
-     * Pone el evento en "DerivadoAExperto”.
-     */
     public void derivarAExperto(EventoSismicoDTO evento, EmpleadoDTO responsable) {
         EstadoDTO estadoDerivadoAExperto = estadoService.obtenerTodosDTO().stream()
             .filter(EstadoDTO::sosDerivadoAExperto)

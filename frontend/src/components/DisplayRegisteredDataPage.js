@@ -91,9 +91,6 @@ function DisplayRegisteredDataPage({
                     boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
                   }}
                 >
-                  <h4>
-                    Serie Temporal ID: <strong>{serie.id}</strong>
-                  </h4>
                   <p>
                     <strong>Fecha y Hora Registros:</strong>{" "}
                     {serie.fechaHoraRegistros
@@ -104,6 +101,27 @@ function DisplayRegisteredDataPage({
                     <strong>Código Estación:</strong>{" "}
                     {serie.codigoEstacion || "N/A"}
                   </p>
+
+                  {/* Display sismogram.jpg for each temporal series */}
+                  <div style={{ marginTop: "15px", textAlign: "center" }}>
+                    <img
+                      src="/sismogram.jpg" // Path to the image in the public folder
+                      alt="Sismogram"
+                      style={{
+                        maxWidth: "100%",
+                        height: "auto",
+                        borderRadius: "5px",
+                        boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                      }}
+                      onError={(e) => {
+                        e.target.onerror = null; // Prevent infinite loop
+                        e.target.src = "https://placehold.co/300x150/cccccc/000000?text=Sismogram+Not+Found"; // Fallback image
+                      }}
+                    />
+                    <p style={{ fontSize: "0.8em", color: "#555", marginTop: "5px" }}>
+                      Sismograma de la serie temporal
+                    </p>
+                  </div>
 
                   <h5
                     style={{
@@ -130,9 +148,6 @@ function DisplayRegisteredDataPage({
                             boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                           }}
                         >
-                          <h6>
-                            Muestra Sísmica ID: <strong>{muestra.id}</strong>
-                          </h6>
                           <p>
                             <strong>Fecha y Hora Muestra:</strong>{" "}
                             {muestra.fechaHoraMuestra
@@ -164,9 +179,6 @@ function DisplayRegisteredDataPage({
                                     backgroundColor: "#fffaf0",
                                   }}
                                 >
-                                  <p style={{ margin: 0 }}>
-                                    <strong>ID Detalle:</strong> {detalle.id}
-                                  </p>
                                   <p style={{ margin: 0 }}>
                                     <strong>Denominación:</strong>{" "}
                                     {detalle.denominacion || "N/A"}

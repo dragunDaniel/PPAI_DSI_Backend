@@ -87,30 +87,22 @@ public class GestorRevisionManualService {
     }
     
     public DatosRegistradosDTO tomarEventoSismicoSeleccionado(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
-    
-        // Guardar evento sismico seleccionado en el gestor
         this.eventoSismicoSeleccionadoDTO = eventoSismicoSeleccionadoDTO;
 
-        // Bloquear EventoSismicoSeleccionado
         bloquearEventoSismicoSeleccionado(eventoSismicoSeleccionadoDTO);
 
-        // Buscar Datos Registrados (ahora retorna DatosRegistradosDTO)
         DatosRegistradosDTO datosRegistrados = buscarDatosRegistrados(eventoSismicoSeleccionadoDTO);
 
-        // Categorizas datos registrados por estación sismica 
         List<SerieTemporalDetalleDTO> seriesTemporalesDetallesDTOs = datosRegistrados.getSeriesTemporalesConDetalles();
         ordenarSeriesTemporalesPorCodigoEstacion(seriesTemporalesDetallesDTOs);
         datosRegistrados.setSeriesTemporalesConDetalles(seriesTemporalesDetallesDTOs);
 
-        // Llamar al caso de uso Generar Sismograma
         gestorGenerarSismogramaService.generarSismograma();
 
-        // Devolver los datos registrados para el sismografo seleccionado
         return datosRegistrados;
     }
 
-    // Obtener hora actual del sistema
-    public LocalDateTime obtenerHoraActual() {
+    public LocalDateTime getFechaHoraActual() {
         return LocalDateTime.now();
     }
 
@@ -126,23 +118,17 @@ public class GestorRevisionManualService {
             }
         }
         
-        // Revisando que efectivamente el estado bloqueado haya sido encontrado en la base de datos
         if (estadoBloqueadoDTO == null) {
             throw new RuntimeException("Estado 'BloqueadoEnRevision' no encontrado en la base de datos.");
         }
 
-        // Bloquear el estado del evento sismico por revision
-        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual(); // O el username actual
+        EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
         eventoSismicoService.bloquearPorRevision(this.eventoSismicoSeleccionadoDTO, empleadoDTO);
 
     }
 
     public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
-        // Se llama a EventoSismicoService para obtener el DTO jerárquico completo (DatosRegistradosDTO)
         DatosRegistradosDTO datosRegistradosDTO = eventoSismicoService.buscarDatosRegistrados(eventoSismicoSeleccionadoDTO);
-        
-        // El DatosRegistradosDTO ya contiene la lista de SerieTemporalDetalleDTOs,
-        // así que se retorna directamente.
         return datosRegistradosDTO;
     }
 
@@ -160,10 +146,8 @@ public class GestorRevisionManualService {
             return false;
         }
 
-        // Actualizar el estado del evento sismico seleccionado a rechazado
         rechazarEventoSismico();
 
-        // llamar a fin de caso de uso
         return finCU();
     }
 
@@ -200,18 +184,14 @@ public class GestorRevisionManualService {
         return true;
     }
 
-    // Rechazar evento sismico seleccionado
     public boolean rechazarEventoSismico() {
-        
-        // Verificar si el evento sismico ya está en estado Rechazado
         if (validarEstadoActual(this.eventoSismicoSeleccionadoDTO, "Rechazado")) {
             return false;
         }        
 
         EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
-        eventoSismicoService.rechazar(this.eventoSismicoSeleccionadoDTO, empleadoDTO);
+        eventoSismicoService.rechazarEventoSismico(this.eventoSismicoSeleccionadoDTO, empleadoDTO, getFechaHoraActual());
 
-        // El cambio a estado Rechazado fue realizado con éxito
         return true;
         
     }

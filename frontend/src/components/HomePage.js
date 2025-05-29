@@ -28,7 +28,7 @@ function HomePage({
           style={registrarRevisionManualDisabled ? disabledButtonStyle : primaryButtonStyle}
           disabled={registrarRevisionManualDisabled}
         >
-          Registrar Revisión Manual
+          Registrar resultado de revisión manual
         </button>
         <button onClick={onDeveloperOptionsClick} style={secondaryButtonStyle}>
           Opciones de Developer
