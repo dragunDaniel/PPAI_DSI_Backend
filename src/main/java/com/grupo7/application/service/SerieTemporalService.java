@@ -10,6 +10,7 @@ import java.util.stream.Collectors; // Added for stream operations
 
 // Entities
 import com.grupo7.application.entity.SerieTemporal;
+import com.grupo7.application.entity.Sismografo;
 import com.grupo7.application.entity.MuestraSismica;
 import com.grupo7.application.entity.DetalleMuestraSismica;
 
@@ -65,15 +66,12 @@ public class SerieTemporalService {
 
         if (serieTemporalEntity.getMuestrasSismicas() != null) {
             muestrasSismicasDTOsForSerie = serieTemporalEntity.getMuestrasSismicas().stream()
-                // Now calling the updated getDatos method from MuestraSismicaService
                 .map(muestraSismicaEntity -> muestraSismicaService.getDatos(muestraSismicaEntity.getId()))
                 .collect(Collectors.toList());
         }
 
-        String currentCodigoEstacion = null;
-        if (serieTemporalEntity.getSismografo() != null && serieTemporalEntity.getSismografo().getEstacionSismologica() != null) {
-            currentCodigoEstacion = serieTemporalEntity.getSismografo().getEstacionSismologica().getCodigoEstacion();
-        }
+        // Use the new helper method to get the station code
+        String currentCodigoEstacion = esTuEstacionSismologica(serieTemporalEntity.getSismografo());
 
         SerieTemporalDetalleDTO serieDetalleDTO = new SerieTemporalDetalleDTO(
             serieTemporalEntity.getId(),
@@ -84,6 +82,13 @@ public class SerieTemporalService {
         );
 
         return serieDetalleDTO;
+    }
+
+    private String esTuEstacionSismologica(Sismografo sismografo) {
+        if (sismografo != null && sismografo.getEstacionSismologica() != null) {
+            return sismografo.getEstacionSismologica().getCodigoEstacion();
+        }
+        return null;
     }
 
 

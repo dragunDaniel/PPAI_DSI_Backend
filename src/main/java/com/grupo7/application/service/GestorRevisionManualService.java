@@ -120,7 +120,7 @@ public class GestorRevisionManualService {
         DatosRegistradosDTO datosRegistrados = buscarDatosRegistrados(eventoSismicoSeleccionadoDTO);
 
         List<SerieTemporalDetalleDTO> seriesTemporalesDetallesDTOs = datosRegistrados.getSeriesTemporalesConDetalles();
-        ordenarSeriesTemporalesPorCodigoEstacion(seriesTemporalesDetallesDTOs);
+        ordenarPorEstacionSismologica(seriesTemporalesDetallesDTOs);
         datosRegistrados.setSeriesTemporalesConDetalles(seriesTemporalesDetallesDTOs);
 
         gestorGenerarSismogramaService.generarSismograma();
@@ -138,7 +138,7 @@ public class GestorRevisionManualService {
         }
 
         EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
-        eventoSismicoService.bloquearPorRevision(this.eventoSismicoSeleccionadoDTO, empleadoDTO, fechaHoraActual);
+        eventoSismicoService.bloquearPorRevision(this.eventoSismicoSeleccionadoDTO, empleadoDTO, fechaHoraActual, estadoBloqueadoDTO);
     }
 
     public DatosRegistradosDTO buscarDatosRegistrados(EventoSismicoDTO eventoSismicoSeleccionadoDTO) {
@@ -146,7 +146,7 @@ public class GestorRevisionManualService {
         return datosRegistradosDTO;
     }
 
-    private void ordenarSeriesTemporalesPorCodigoEstacion(List<SerieTemporalDetalleDTO> seriesTemporalesDetalleDTOs) {
+    private void ordenarPorEstacionSismologica(List<SerieTemporalDetalleDTO> seriesTemporalesDetalleDTOs) {
         if (seriesTemporalesDetalleDTOs != null) {
             seriesTemporalesDetalleDTOs.sort(Comparator.comparing(SerieTemporalDetalleDTO::getCodigoEstacion,
                     Comparator.nullsLast(String::compareTo)));
@@ -158,7 +158,7 @@ public class GestorRevisionManualService {
         if (!validarDatosSismicos()) {
             return false;
         }
-        rechazarEventoSismico();
+        actualizarEventoSismicoARechazado();
         return finCU();
     }
 
@@ -175,36 +175,57 @@ public class GestorRevisionManualService {
 
     // Confirmar evento sismico seleccionado
     public boolean confirmarEventoSismico() {
-        // Verificar si el evento sismico ya está en estado Confirmado
-        if (validarEstadoActual(this.eventoSismicoSeleccionadoDTO, "Confirmado")) {
-            return false;
+        EstadoDTO estadoConfirmado = null;
+        final LocalDateTime fechaHoraActual = getFechaHoraActual();
+
+
+        for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
+            if (estadoDTO.sosBloqueadoEnRevision()) {
+                estadoConfirmado = estadoDTO;
+                break;
+            }
         }
-        // Confirmar el evento sismico seleccionado
         EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
-        eventoSismicoService.confirmar(this.eventoSismicoSeleccionadoDTO, empleadoDTO, getFechaHoraActual());
+        eventoSismicoService.confirmar(this.eventoSismicoSeleccionadoDTO, empleadoDTO, fechaHoraActual, estadoConfirmado);
 
         // El cambio a estado Confirmado fue realizado con éxito
         return true;
     }
 
-    public boolean rechazarEventoSismico() {
-        if (validarEstadoActual(this.eventoSismicoSeleccionadoDTO, "Rechazado")) {
-            return false;
+    public boolean actualizarEventoSismicoARechazado() {
+        EstadoDTO estadoRechazadoDTO = null;
+        final LocalDateTime fechaHoraActual = getFechaHoraActual();
+
+
+        for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
+            if (estadoDTO.sosBloqueadoEnRevision()) {
+                estadoRechazadoDTO = estadoDTO;
+                break;
+            }
         }
         EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
-        eventoSismicoService.rechazarEventoSismico(this.eventoSismicoSeleccionadoDTO, empleadoDTO, getFechaHoraActual());
+        eventoSismicoService.rechazarEventoSismico(this.eventoSismicoSeleccionadoDTO, empleadoDTO, fechaHoraActual, estadoRechazadoDTO);
         return true;
     }
 
     // Derivar a experto el evento sismico seleccionado
     public boolean derivarAExpertoEventoSismicoSeleccionado() {
-        // Verificar si el evento sismico ya está en estado DerivadoAExperto
+        EstadoDTO estadoDerivadoAExperto = null;
+        final LocalDateTime fechaHoraActual = getFechaHoraActual();
+
         if (validarEstadoActual(this.eventoSismicoSeleccionadoDTO, "DerivadoAExperto")) {
             return false;
         }
-        // Derivar al experto el evento sismico seleccionado
+        
+        for (EstadoDTO estadoDTO : estadoService.obtenerTodosDTO()) {
+            if (estadoDTO.sosBloqueadoEnRevision()) {
+                estadoDerivadoAExperto = estadoDTO;
+                break;
+            }
+        }
+
         EmpleadoDTO empleadoDTO = usuarioService.obtenerEmpleadoActual();
-        eventoSismicoService.derivarAExperto(this.eventoSismicoSeleccionadoDTO, empleadoDTO, getFechaHoraActual());
+        eventoSismicoService.derivarAExperto(this.eventoSismicoSeleccionadoDTO, empleadoDTO, fechaHoraActual, estadoDerivadoAExperto);
         // El cambio a estado DerivadoAExperto fue realizado con éxito
         return true;
     }

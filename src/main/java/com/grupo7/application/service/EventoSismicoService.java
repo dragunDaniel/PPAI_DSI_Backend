@@ -109,38 +109,22 @@ public class EventoSismicoService {
     //Cambios de estado
 
     //Cambiar estado a rechazado
-    public void rechazarEventoSismico(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual) {
-        EstadoDTO estadoRechazado = estadoService.obtenerTodosDTO().stream()
-            .filter(EstadoDTO::sosRechazado)
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Estado Rechazado no encontrado"));
+    public void rechazarEventoSismico(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual, EstadoDTO estadoRechazado) {
         cambiarEstado(evento, fechaHoraActual, estadoRechazado, responsable);
     }
 
     //Cambiar estado a BloqueadoEnRevision
-    public void bloquearPorRevision(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual) {
-        EstadoDTO estadoBloqueado = estadoService.obtenerTodosDTO().stream()
-            .filter(EstadoDTO::sosBloqueadoEnRevision)
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Estado BloqueadoEnRevision no encontrado"));
+    public void bloquearPorRevision(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual, EstadoDTO estadoBloqueado) {
         cambiarEstado(evento, fechaHoraActual, estadoBloqueado, responsable);
     }
 
     //Cambiar estado a confirmado
-    public void confirmar(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual) {
-        EstadoDTO estadoConfirmado = estadoService.obtenerTodosDTO().stream()
-            .filter(EstadoDTO::sosConfirmado)
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Estado Confirmado no encontrado"));
-        cambiarEstado(evento, fechaHoraActual, estadoConfirmado, responsable);
+    public void confirmar(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual, EstadoDTO estadoDerivadoAExperto) {
+        cambiarEstado(evento, fechaHoraActual, estadoDerivadoAExperto, responsable);
     }
 
     //Cambiar estado a DerivadoAExperto
-    public void derivarAExperto(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual) {
-        EstadoDTO estadoDerivadoAExperto = estadoService.obtenerTodosDTO().stream()
-            .filter(EstadoDTO::sosDerivadoAExperto)
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Estado DerivadoAExperto no encontrado"));
+    public void derivarAExperto(EventoSismicoDTO evento, EmpleadoDTO responsable, LocalDateTime fechaHoraActual, EstadoDTO estadoDerivadoAExperto) {
         cambiarEstado(evento, fechaHoraActual, estadoDerivadoAExperto, responsable);
     }
 
